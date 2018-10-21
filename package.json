@@ -12,7 +12,7 @@
   "author": "Chris Sperry <christophermartinsperry@gmail.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:biggyspender/blinq.git"
   },
   "license": "MIT",
   "engines": {
