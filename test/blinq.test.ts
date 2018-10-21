@@ -231,7 +231,7 @@ describe('blinq test', () => {
     expect(blinq.range(0, 2).toArray()).toEqual([0, 1])
   })
   it('toLookup', () => {
-    const lookup = blinq.range(0, 10).toLookup(x => x % 2, x => x)
+    const lookup = blinq.range(0, 10).toLookup(x => x % 2)
     expect(lookup.count()).toBe(2)
     expect([...lookup.get(0)]).toEqual([0, 2, 4, 6, 8])
     expect([...lookup.get(1)]).toEqual([1, 3, 5, 7, 9])
@@ -394,7 +394,6 @@ describe('blinq test', () => {
       'andrew johnson',
       'not relevant no match'
     ])
-    // expect([...items]).toEqual(["chris sperry", "chris pike", "andrew johnson", "not relevant no match"]);
   })
 
   it('skip', () => {
@@ -458,6 +457,11 @@ describe('blinq test', () => {
         .minBy(x => x)
         .toArray()
     ).toEqual([0, 0])
+    expect(
+      blinq([0, 0])
+        .maxBy(x => x)
+        .toArray()
+    ).toEqual([0, 0])
   })
   it('append', () => {
     expect(
@@ -466,7 +470,7 @@ describe('blinq test', () => {
         .toArray()
     ).toEqual([1, 2, 3])
   })
-  it('append', () => {
+  it('prepend', () => {
     expect(
       blinq([1, 2])
         .prepend(3)
