@@ -446,4 +446,18 @@ describe('blinq test', () => {
         .minBy(x => x.age)
     ).toThrow()
   })
+  it('append', () => {
+    expect(
+      blinq([1, 2])
+        .append(3)
+        .toArray()
+    ).toEqual([1, 2, 3])
+  })
+  it('append', () => {
+    expect(
+      blinq([1, 2])
+        .prepend(3)
+        .toArray()
+    ).toEqual([3, 1, 2])
+  })
 })

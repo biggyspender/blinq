@@ -79,6 +79,9 @@ export abstract class Enumerable<T> implements Iterable<T> {
     }
     return false
   }
+  public append(item: T): Enumerable<T> {
+    return this.concat(Enumerable.fromSingleValue(item))
+  }
 
   public average(this: Enumerable<number>) {
     const f = this.aggregate(
@@ -138,7 +141,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
   }
 
   public distinct(): Enumerable<T> {
-    return this.groupBy(x => x).select(g => g.first())
+    return this.distinctBy(x => x)
   }
 
   public distinctBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
@@ -407,6 +410,10 @@ export abstract class Enumerable<T> implements Iterable<T> {
   public orderByDescending<TCmp>(selector: (x: T) => TCmp): OrderedIterable<T> {
     const builder = ComparerBuilder.create<T>().sortKeyDescending(selector)
     return new OrderedIterable<T>(this, builder)
+  }
+
+  public prepend(item: T): Enumerable<T> {
+    return Enumerable.fromSingleValue(item).concat(this)
   }
 
   public reverse() {
