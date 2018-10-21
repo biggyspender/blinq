@@ -274,11 +274,11 @@ describe('blinq test', () => {
     const lookup = gj.toMap(x => x.i, x => x)
     const key0 = lookup.get(0)
     expect(
-      key0 && typeof key0.rgt === 'undefined' && key0.lft && blinq(key0.lft).sequenceEqual([0, 0])
+      key0 && key0.rgt.length === 0 && key0.lft && blinq(key0.lft).sequenceEqual([0, 0])
     ).toBeTruthy()
     const key5 = lookup.get(5)
     expect(
-      key5 && typeof key5.lft === 'undefined' && key5.rgt && blinq(key5.rgt).sequenceEqual([5, 5])
+      key5 && key5.lft.length === 0 && key5.rgt && blinq(key5.rgt).sequenceEqual([5, 5])
     ).toBeTruthy()
 
     const mid = gj
@@ -438,13 +438,26 @@ describe('blinq test', () => {
       { name: 'pav', age: 45 },
       { name: 'luke', age: 41 }
     ]
-    expect(blinq(arr).maxBy(x => x.age).name).toBe('nicole')
-    expect(blinq(arr).minBy(x => x.age).name).toBe('luke')
+    expect(
+      blinq(arr)
+        .maxBy(x => x.age)
+        .first().name
+    ).toBe('nicole')
+    expect(
+      blinq(arr)
+        .minBy(x => x.age)
+        .first().name
+    ).toBe('luke')
     expect(() =>
       blinq(arr)
         .take(0)
         .minBy(x => x.age)
     ).toThrow()
+    expect(
+      blinq([0, 0])
+        .minBy(x => x)
+        .toArray()
+    ).toEqual([0, 0])
   })
   it('append', () => {
     expect(

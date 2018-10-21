@@ -1,4 +1,5 @@
 import { ComparerBuilder, ThenComparerBuilder } from './ComparerBuilder'
+import { Comparer } from './Comparer'
 export type IndexedPredicate<T> = (x: T, i: number) => Boolean
 export type IndexedSelector<T, TOut> = (x: T, i: number) => TOut
 export abstract class Enumerable<T> implements Iterable<T> {
@@ -387,19 +388,23 @@ export abstract class Enumerable<T> implements Iterable<T> {
   }
 
   public max(this: Enumerable<number>, pred: IndexedPredicate<number> = this.truePredicate) {
-    return this.where(pred).maxBy(x => x)
+    return this.where(pred)
+      .maxBy(x => x)
+      .first()
   }
 
   public maxBy<TKey>(selector: IndexedSelector<T, TKey>) {
-    return minMaxByImpl(this, selector, (a, b) => a > b)
+    return minMaxByImpl(this, selector, (a, b) => (a > b ? 1 : a < b ? -1 : 0))
   }
 
   public min(this: Enumerable<number>, pred: IndexedPredicate<number> = this.truePredicate) {
-    return this.where(pred).minBy(x => x)
+    return this.where(pred)
+      .minBy(x => x)
+      .first()
   }
 
   public minBy<TKey>(selector: IndexedSelector<T, TKey>) {
-    return minMaxByImpl(this, selector, (a, b) => a < b)
+    return minMaxByImpl(this, selector, (a, b) => (a < b ? 1 : a > b ? -1 : 0))
   }
 
   public orderBy<TCmp>(selector: (x: T) => TCmp): OrderedIterable<T> {
@@ -765,25 +770,30 @@ class OrderedIterable<T> extends GeneratorIterable<T> {
 function minMaxByImpl<T, TKey>(
   src: Iterable<T>,
   selector: IndexedSelector<T, TKey>,
-  comparer: (a: TKey, b: TKey) => boolean
-): T {
-  let currentBest: [TKey, T] | undefined
+  comparer: Comparer<TKey>
+): Enumerable<T> {
+  let currentBestKey: TKey | undefined
+  let currentBest: T[] = []
   let i = 0
   for (let item of src) {
     const idx = i++
     const key = selector(item, idx)
-    if (typeof currentBest === 'undefined') {
-      currentBest = [key, item]
+    if (typeof currentBestKey === 'undefined') {
+      currentBest.push(item)
+      currentBestKey = key
     } else {
-      const bestKey = currentBest[0]
-      if (comparer(key, bestKey)) {
-        currentBest = [key, item]
+      const comparison = comparer(key, currentBestKey)
+      if (comparison > 0) {
+        currentBest = [item]
+        currentBestKey = key
+      } else if (comparison === 0) {
+        currentBest.push(item)
       }
     }
   }
-  if (typeof currentBest === 'undefined') {
+  if (currentBest.length === 0) {
     throw Error('sequence contains no elements')
   }
-  const returnItem = currentBest[1]
-  return returnItem
+
+  return new WrapperIterable(currentBest)
 }
