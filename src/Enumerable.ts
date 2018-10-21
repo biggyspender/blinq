@@ -16,7 +16,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public static fromIterable<T>(value: Iterable<T>) {
+  public static fromIterable<T>(value: Iterable<T>): Enumerable<T> {
     return Enumerable.fromGenerator(function*() {
       for (let x of value) {
         yield x
@@ -24,13 +24,13 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public static fromSingleValue<T>(value: T) {
+  public static fromSingleValue<T>(value: T): Enumerable<T> {
     return Enumerable.fromGenerator(function*() {
       yield value
     })
   }
 
-  public static range(start: number, range: number) {
+  public static range(start: number, range: number): Enumerable<number> {
     if (Math.trunc(start) !== start) {
       throw Error('start must be an integral value')
     }
@@ -47,18 +47,18 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public static repeat<T>(item: T, numRepeats: number) {
+  public static repeat<T>(item: T, numRepeats: number): Enumerable<T> {
     return Enumerable.range(0, numRepeats).select(() => item)
   }
 
-  public static repeatGenerate<T>(generator: (i: number) => T, numRepeats: number) {
+  public static repeatGenerate<T>(generator: (i: number) => T, numRepeats: number): Enumerable<T> {
     return Enumerable.range(0, numRepeats).select(i => generator(i))
   }
 
   public abstract [Symbol.iterator](): IterableIterator<T>
   private truePredicate: IndexedPredicate<T> = x => true
 
-  public aggregate<TOut>(seed: TOut, aggFunc: (prev: TOut, curr: T, idx: number) => TOut) {
+  public aggregate<TOut>(seed: TOut, aggFunc: (prev: TOut, curr: T, idx: number) => TOut): TOut {
     let v = seed
     let i = 0
     for (let item of this) {
@@ -67,11 +67,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return v
   }
 
-  public all(pred: IndexedPredicate<T>) {
+  public all(pred: IndexedPredicate<T>): boolean {
     return !this.any((item, i) => !pred(item, i))
   }
 
-  public any(pred: IndexedPredicate<T> = this.truePredicate) {
+  public any(pred: IndexedPredicate<T> = this.truePredicate): boolean {
     let i = 0
     for (let item of this) {
       if (pred(item, i++)) {
@@ -84,7 +84,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return this.concat(Enumerable.fromSingleValue(item))
   }
 
-  public average(this: Enumerable<number>) {
+  public average(this: Enumerable<number>): number {
     const f = this.aggregate(
       {
         tot: 0,
@@ -102,7 +102,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return f.tot / f.count
   }
 
-  public concat(...sequences: Array<Iterable<T>>) {
+  public concat(...sequences: Array<Iterable<T>>): Enumerable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       for (let item of src) {
@@ -116,7 +116,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public count(pred: IndexedPredicate<T> = this.truePredicate) {
+  public count(pred: IndexedPredicate<T> = this.truePredicate): number {
     let c = 0
     let i = 0
     for (let item of this) {
@@ -162,11 +162,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public elementAt(index: number) {
+  public elementAt(index: number): T {
     return this.single((x, i) => i === index)
   }
 
-  public except(seq: Iterable<T>) {
+  public except(seq: Iterable<T>): Enumerable<T> {
     const set: Set<T> = new Set<T>()
     for (let item of seq) {
       set.add(item)
@@ -174,7 +174,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return this.where(item => !set.has(item))
   }
 
-  public first(pred: IndexedPredicate<T> = this.truePredicate) {
+  public first(pred: IndexedPredicate<T> = this.truePredicate): T {
     let i = 0
     for (let item of this) {
       if (pred(item, i++)) {
@@ -184,7 +184,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     throw Error('sequence contains no elements')
   }
 
-  public firstOrDefault(pred: IndexedPredicate<T> = this.truePredicate) {
+  public firstOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
     let i = 0
     for (let item of this) {
       if (pred(item, i++)) {
@@ -194,10 +194,12 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return undefined
   }
 
-  public forEach(action: (x: T, i: number) => void) {
+  public forEach(action: (x: T, i: number) => void): void {
+    const src = this
     let i = 0
-    for (let item of this) {
-      action(item, i++)
+    for (const x of src) {
+      const currentIdx = i++
+      action(x, currentIdx)
     }
   }
 
@@ -221,8 +223,8 @@ export abstract class Enumerable<T> implements Iterable<T> {
     selector: (o: Enumerable<T>, v: Enumerable<TRight>, k: TKey) => TOut
   ): Enumerable<TOut> {
     const right = Enumerable.fromIterable(rightSeq)
-    const leftLookup = this.toLookup(leftKeySelector, x => x)
-    const rightLookup = right.toLookup(rightKeySelector, x => x)
+    const leftLookup = this.toLookup(leftKeySelector)
+    const rightLookup = right.toLookup(rightKeySelector)
     const allKeys = leftLookup
       .select(([key, _]) => key)
       .concat(rightLookup.select(([key, _]) => key))
@@ -237,32 +239,10 @@ export abstract class Enumerable<T> implements Iterable<T> {
       .select(x => selector(x.leftItem, x.rightItem, x.key))
   }
 
-  // public fullOuterJoin<TRight, TKey, TOut>(
-  //     rightSeq: Iterable<TRight>,
-  //     leftKeySelector: IndexedSelector<T, TKey>,
-  //     rightKeySelector: IndexedSelector<TRight, TKey>,
-  //     selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
-  // ): Enumerable<TOut> {
-  //     const right = Enumerable.fromIterable(rightSeq);
-  //     const leftLookup = this.toLookup<TKey, T | undefined>(leftKeySelector, x => x);
-  //     const rightLookup = right.toLookup<TKey, TRight | undefined>(rightKeySelector, x => x);
-
-  //     const allKeys = leftLookup
-  //         .select(([key, _]) => key)
-  //         .concat(rightLookup.select(([key, _]) => key))
-  //         .distinct();
-  //     expect([...allKeys]).toEqual([...allKeys]);
-  //     return allKeys
-  //         .selectMany(
-  //             key => (leftLookup.get(key) || Enumerable.fromSingleValue<T | undefined>(undefined))
-  //                 .select(x => ({ key, leftItem: x })))
-  //         .selectMany(
-  //             x => (rightLookup.get(x.key) || Enumerable.fromSingleValue<TRight | undefined>(undefined))
-  //                 .select(rightItem => selector(x.leftItem, rightItem, x.key)));
-  // }
-
-  public groupBy<TKey>(keySelector: IndexedSelector<T, TKey>) {
-    const lookup = this.toLookup(keySelector, x => x)
+  public groupBy<TKey>(
+    keySelector: IndexedSelector<T, TKey>
+  ): Enumerable<GroupedIterable<TKey, T>> {
+    const lookup = this.toLookup(keySelector)
 
     return lookup.select(([key, value]) => {
       const returnValue = new GroupedIterable(key, value)
@@ -276,9 +256,9 @@ export abstract class Enumerable<T> implements Iterable<T> {
     outerKeySelector: IndexedSelector<T, TKey>,
     innerKeySelector: IndexedSelector<TInner, TKey>,
     selector: (o: T, v: Enumerable<TInner>) => TOut
-  ) {
+  ): Enumerable<TOut> {
     const innerSeqIt = Enumerable.fromIterable(innerSeq)
-    const lookup = innerSeqIt.toLookup(innerKeySelector, x => x)
+    const lookup = innerSeqIt.toLookup(innerKeySelector)
     const outerSeq = this
 
     return Enumerable.fromGenerator(function*() {
@@ -293,7 +273,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public intersect(seq: Iterable<T>) {
+  public intersect(seq: Iterable<T>): Enumerable<T> {
     const set: Set<T> = new Set()
     for (let item of seq) {
       set.add(item)
@@ -301,12 +281,12 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return this.where(item => set.has(item))
   }
 
-  public isSubsetOf(seq: Iterable<T>) {
+  public isSubsetOf(seq: Iterable<T>): boolean {
     const set = new Set(seq)
     return this.all(x => set.has(x))
   }
 
-  public isSupersetOf(seq: Iterable<T>) {
+  public isSupersetOf(seq: Iterable<T>): boolean {
     return Enumerable.fromIterable(seq).isSubsetOf(this)
   }
 
@@ -315,7 +295,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     outerKeySelector: IndexedSelector<T, TKey>,
     innerKeySelector: IndexedSelector<TInner, TKey>,
     selector: (outer: T, inner: TInner | undefined) => TOut
-  ) {
+  ): Enumerable<TOut> {
     return this.groupJoin(innerSeq, outerKeySelector, innerKeySelector, (outer, innerSeq) => ({
       outer,
       innerSeq
@@ -329,37 +309,14 @@ export abstract class Enumerable<T> implements Iterable<T> {
     outerKeySelector: IndexedSelector<T, TKey>,
     innerKeySelector: IndexedSelector<TInner, TKey>,
     selector: (outer: T, inner: TInner) => TOut
-  ) {
+  ): Enumerable<TOut> {
     return this.groupJoin(innerSeq, outerKeySelector, innerKeySelector, (outer, innerSeq) => ({
       outer,
       innerSeq
     })).selectMany(({ outer, innerSeq }) => innerSeq.select(i => selector(outer, i)))
   }
 
-  // join<TInner, TKey, TOut>(
-  //     innerSeq: Iterable<TInner>,
-  //     outerKeySelector: IndexedSelector<T, TKey>,
-  //     innerKeySelector: IndexedSelector<TInner, TKey>,
-  //     selector: (outer: T, inner: TInner) => TOut
-  // ) {
-  //     const innerSeqIt = Enumerable.fromIterable(innerSeq);
-  //     const lookup = innerSeqIt.toLookup(innerKeySelector, x => x);
-  //     const outerSeq = this;
-
-  //     return Enumerable.fromGenerator(function* () {
-  //         let i = 0;
-  //         for (let outerItem of outerSeq) {
-  //             const outerKey = outerKeySelector(outerItem, i++);
-  //             let innerItems = lookup.get(outerKey) || Enumerable.empty();
-
-  //             for (let innerItem of innerItems) {
-  //                 yield selector(outerItem, innerItem);
-  //             }
-  //         }
-  //     });
-  // }
-
-  public last(pred: IndexedPredicate<T> = this.truePredicate) {
+  public last(pred: IndexedPredicate<T> = this.truePredicate): T {
     let i = 0
     let returnVal
     let found = false
@@ -369,14 +326,14 @@ export abstract class Enumerable<T> implements Iterable<T> {
         found = true
       }
     }
-    if (found) {
+    if (found && returnVal) {
       return returnVal
     } else {
       throw Error('sequence contains no elements')
     }
   }
 
-  public lastOrDefault(pred: IndexedPredicate<T> = this.truePredicate) {
+  public lastOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
     let i = 0
     let returnVal
     for (let item of this) {
@@ -387,23 +344,29 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return returnVal
   }
 
-  public max(this: Enumerable<number>, pred: IndexedPredicate<number> = this.truePredicate) {
+  public max(
+    this: Enumerable<number>,
+    pred: IndexedPredicate<number> = this.truePredicate
+  ): number {
     return this.where(pred)
       .maxBy(x => x)
       .first()
   }
 
-  public maxBy<TKey>(selector: IndexedSelector<T, TKey>) {
+  public maxBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
     return minMaxByImpl(this, selector, (a, b) => (a > b ? 1 : a < b ? -1 : 0))
   }
 
-  public min(this: Enumerable<number>, pred: IndexedPredicate<number> = this.truePredicate) {
+  public min(
+    this: Enumerable<number>,
+    pred: IndexedPredicate<number> = this.truePredicate
+  ): number {
     return this.where(pred)
       .minBy(x => x)
       .first()
   }
 
-  public minBy<TKey>(selector: IndexedSelector<T, TKey>) {
+  public minBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
     return minMaxByImpl(this, selector, (a, b) => (a < b ? 1 : a > b ? -1 : 0))
   }
 
@@ -421,11 +384,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return Enumerable.fromSingleValue(item).concat(this)
   }
 
-  public reverse() {
-    return Enumerable.fromIterable([...this].reverse())
+  public reverse(): Enumerable<T> {
+    return Enumerable.fromGenerator(() => [...this].reverse())
   }
 
-  public select<TOut>(selector: IndexedSelector<T, TOut>) {
+  public select<TOut>(selector: IndexedSelector<T, TOut>): Enumerable<TOut> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let c = 0
@@ -435,7 +398,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public selectMany<TOut>(selector: IndexedSelector<T, Iterable<TOut>>) {
+  public selectMany<TOut>(selector: IndexedSelector<T, Iterable<TOut>>): Enumerable<TOut> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
@@ -447,7 +410,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public sequenceEqual(seq: Iterable<T>) {
+  public sequenceEqual(seq: Iterable<T>): boolean {
     const it1 = this[Symbol.iterator]()
     const it2 = seq[Symbol.iterator]()
     for (;;) {
@@ -487,7 +450,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     throw Error('sequence contains no elements')
   }
 
-  public singleOrDefault(pred: IndexedPredicate<T> = this.truePredicate) {
+  public singleOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
     let itemCount = 0
     let foundItem
     let i = 0
@@ -507,11 +470,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return undefined
   }
 
-  public skip(numItems: number) {
+  public skip(numItems: number): Enumerable<T> {
     return this.skipWhile((_, i) => i < numItems)
   }
 
-  public skipWhile(pred: IndexedPredicate<T>) {
+  public skipWhile(pred: IndexedPredicate<T>): Enumerable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
@@ -525,15 +488,15 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public sum(this: Enumerable<number>) {
+  public sum(this: Enumerable<number>): number {
     return this.aggregate(0, (acc, val) => acc + val)
   }
 
-  public take(numItems: number) {
+  public take(numItems: number): Enumerable<T> {
     return this.takeWhile((_, i) => i < numItems)
   }
 
-  public takeWhile(pred: IndexedPredicate<T>) {
+  public takeWhile(pred: IndexedPredicate<T>): Enumerable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
@@ -547,26 +510,33 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public toArray() {
+  public toArray(): T[] {
     return [...this]
   }
 
+  public toLookup<TKey>(keySelector: IndexedSelector<T, TKey>): MapIterable<TKey, Enumerable<T>>
   public toLookup<TKey, TValue>(
     keySelector: IndexedSelector<T, TKey>,
     valueSelector: IndexedSelector<T, TValue>
-  ): MapIterable<TKey, Enumerable<TValue>> {
-    const map: Map<TKey, ArrayIterable<TValue>> = new Map()
+  ): MapIterable<TKey, Enumerable<TValue>>
+  public toLookup<TKey, TValue>(
+    keySelector: IndexedSelector<T, TKey>,
+    valueSelector?: IndexedSelector<T, TValue>
+  ): MapIterable<TKey, Enumerable<T | TValue>> {
+    const vs: (v: T, i: number) => T | TValue = valueSelector || identity
+
+    const map: Map<TKey, ArrayIterable<T | TValue>> = new Map()
     let i = 0
     for (let item of this) {
       let currentIdx = i++
       const key = keySelector(item, currentIdx)
-      let arr: ArrayIterable<TValue>
+      let arr: ArrayIterable<T | TValue>
 
-      arr = map.get(key) || new ArrayIterable<TValue>([])
+      arr = map.get(key) || new ArrayIterable<T | TValue>([])
       map.set(key, arr)
-      arr.push(valueSelector(item, currentIdx))
+      arr.push(vs(item, currentIdx))
     }
-    return new MapIterable<TKey, Enumerable<TValue>>(map)
+    return new MapIterable<TKey, Enumerable<T | TValue>>(map)
   }
 
   public toMap<TKey, TValue>(
@@ -586,11 +556,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return new MapIterable(map)
   }
 
-  public union(seq: Iterable<T>) {
+  public union(seq: Iterable<T>): Enumerable<T> {
     return this.concat(seq).distinct()
   }
 
-  public where(pred: IndexedPredicate<T>) {
+  public where(pred: IndexedPredicate<T>): Enumerable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
@@ -602,7 +572,10 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public zip<TOther, TOut>(seq: Iterable<TOther>, selector: (item1: T, item2: TOther) => TOut) {
+  public zip<TOther, TOut>(
+    seq: Iterable<TOther>,
+    selector: (item1: T, item2: TOther) => TOut
+  ): Enumerable<TOut> {
     const src = this
 
     return Enumerable.fromGenerator(function*() {
@@ -797,3 +770,4 @@ function minMaxByImpl<T, TKey>(
 
   return new WrapperIterable(currentBest)
 }
+const identity = <T>(t: T) => t
