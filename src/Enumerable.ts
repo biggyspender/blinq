@@ -200,11 +200,24 @@ export abstract class Enumerable<T> implements Iterable<T> {
     }
   }
 
+  public fullOuterJoin<TRight, TKey, TOut>(
+    rightSeq: Iterable<TRight>,
+    leftKeySelector: IndexedSelector<T, TKey>,
+    rightKeySelector: IndexedSelector<TRight, TKey>,
+    selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
+  ): Enumerable<TOut> {
+    return this.fullOuterGroupJoin(rightSeq, leftKeySelector, rightKeySelector, (lft, rgt, i) => ({
+      lft: lft.defaultIfEmpty(),
+      rgt: rgt.defaultIfEmpty(),
+      i
+    })).selectMany(x => x.lft.selectMany(l => x.rgt.select(r => selector(l, r, x.i))))
+  }
+
   public fullOuterGroupJoin<TRight, TKey, TOut>(
     rightSeq: Iterable<TRight>,
     leftKeySelector: IndexedSelector<T, TKey>,
     rightKeySelector: IndexedSelector<TRight, TKey>,
-    selector: (o: Enumerable<T> | undefined, v: Enumerable<TRight> | undefined, k: TKey) => TOut
+    selector: (o: Enumerable<T>, v: Enumerable<TRight>, k: TKey) => TOut
   ): Enumerable<TOut> {
     const right = Enumerable.fromIterable(rightSeq)
     const leftLookup = this.toLookup(leftKeySelector, x => x)
@@ -214,26 +227,13 @@ export abstract class Enumerable<T> implements Iterable<T> {
       .concat(rightLookup.select(([key, _]) => key))
       .distinct()
     return allKeys
-      .select(key => ({ key, leftItem: leftLookup.get(key) }))
-      .select(x => ({ key: x.key, leftItem: x.leftItem, rightItem: rightLookup.get(x.key) }))
+      .select(key => ({ key, leftItem: leftLookup.get(key) || Enumerable.empty<T>() }))
+      .select(x => ({
+        key: x.key,
+        leftItem: x.leftItem,
+        rightItem: rightLookup.get(x.key) || Enumerable.empty<TRight>()
+      }))
       .select(x => selector(x.leftItem, x.rightItem, x.key))
-  }
-
-  public fullOuterJoin<TRight, TKey, TOut>(
-    rightSeq: Iterable<TRight>,
-    leftKeySelector: IndexedSelector<T, TKey>,
-    rightKeySelector: IndexedSelector<TRight, TKey>,
-    selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
-  ): Enumerable<TOut> {
-    return this.fullOuterGroupJoin(rightSeq, leftKeySelector, rightKeySelector, (lft, rgt, i) => ({
-      lft:
-        (lft && lft.select<T | undefined>(x => x)) ||
-        Enumerable.fromSingleValue<T | undefined>(undefined),
-      rgt:
-        (rgt && rgt.select<TRight | undefined>(x => x)) ||
-        Enumerable.fromSingleValue<TRight | undefined>(undefined),
-      i
-    })).selectMany(x => x.lft.selectMany(l => x.rgt.select(r => selector(l, r, x.i))))
   }
 
   // public fullOuterJoin<TRight, TKey, TOut>(
