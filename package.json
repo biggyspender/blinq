@@ -30,8 +30,7 @@
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "commit": "npx git-cz",
     "semantic-release": "semantic-release",
-    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-    "precommit": "lint-staged"
+    "semantic-release-prepare": "ts-node tools/semantic-release-prepare"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -114,5 +113,10 @@
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
