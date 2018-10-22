@@ -1,5 +1,6 @@
 import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
 import './fullOuterGroupJoin'
+import './defaultIfEmpty'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {

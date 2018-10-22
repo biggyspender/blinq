@@ -1,5 +1,6 @@
 import { Enumerable, IndexedSelector } from '../../Enumerable'
 import { Comparer } from '../../Comparer'
+import * as EnumerableGenerators from '../../EnumerableGenerators'
 
 export default function minMaxByImpl<T, TKey>(
   src: Iterable<T>,
@@ -29,5 +30,5 @@ export default function minMaxByImpl<T, TKey>(
     throw Error('sequence contains no elements')
   }
 
-  return Enumerable.fromIterable(currentBest)
+  return EnumerableGenerators.fromIterable(currentBest)
 }

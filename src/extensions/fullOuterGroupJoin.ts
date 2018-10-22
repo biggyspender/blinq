@@ -1,4 +1,5 @@
-import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
+import { Enumerable, IndexedSelector } from '../Enumerable'
+import * as EnumerableGenerators from '../EnumerableGenerators'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -12,8 +13,6 @@ declare module '../Enumerable' {
   }
 }
 
-const identity = getIdentity()
-
 function fullOuterGroupJoin<T, TRight, TKey, TOut>(
   this: Enumerable<T>,
   rightSeq: Iterable<TRight>,
@@ -21,7 +20,7 @@ function fullOuterGroupJoin<T, TRight, TKey, TOut>(
   rightKeySelector: IndexedSelector<TRight, TKey>,
   selector: (o: Enumerable<T>, v: Enumerable<TRight>, k: TKey) => TOut
 ): Enumerable<TOut> {
-  const right = Enumerable.fromIterable(rightSeq)
+  const right = EnumerableGenerators.fromIterable(rightSeq)
   const leftLookup = this.toLookup(leftKeySelector)
   const rightLookup = right.toLookup(rightKeySelector)
   const allKeys = leftLookup
@@ -29,11 +28,11 @@ function fullOuterGroupJoin<T, TRight, TKey, TOut>(
     .concat(rightLookup.select(([key, _]) => key))
     .distinct()
   return allKeys
-    .select(key => ({ key, leftItem: leftLookup.get(key) || Enumerable.empty<T>() }))
+    .select(key => ({ key, leftItem: leftLookup.get(key) || EnumerableGenerators.empty<T>() }))
     .select(({ key, leftItem }) => ({
       key,
       leftItem,
-      rightItem: rightLookup.get(key) || Enumerable.empty<TRight>()
+      rightItem: rightLookup.get(key) || EnumerableGenerators.empty<TRight>()
     }))
     .select(x => selector(x.leftItem, x.rightItem, x.key))
 }

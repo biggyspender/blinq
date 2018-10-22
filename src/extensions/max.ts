@@ -26,6 +26,7 @@ function max<T, TOut>(selector: IndexedSelector<T, TOut>): TOut | undefined
 // tslint:disable-next-line:unified-signatures
 function max<T, TOut>(
   selector: IndexedSelector<T, TOut>,
+  // tslint:disable-next-line:unified-signatures
   comparer: Comparer<TOut>
 ): TOut | undefined
 function max<T, TOut>(

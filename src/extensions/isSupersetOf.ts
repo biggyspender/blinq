@@ -1,5 +1,5 @@
 import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
-const identity = getIdentity()
+import * as EnumerableGenerators from '../EnumerableGenerators'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -9,7 +9,7 @@ declare module '../Enumerable' {
 
 // <T>(this:Enumerable<T>,
 function isSupersetOf<T>(this: Enumerable<T>, seq: Iterable<T>): boolean {
-  return Enumerable.fromIterable(seq).isSubsetOf(this)
+  return EnumerableGenerators.fromIterable(seq).isSubsetOf(this)
 }
 
 Enumerable.prototype.isSupersetOf = isSupersetOf

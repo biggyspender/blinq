@@ -1,5 +1,5 @@
-import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
-const identity = getIdentity()
+import { Enumerable } from '../Enumerable'
+import * as EnumerableGenerators from '../EnumerableGenerators'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -9,7 +9,7 @@ declare module '../Enumerable' {
 
 function concat<T>(this: Enumerable<T>, ...sequences: Array<Iterable<T>>): Enumerable<T> {
   const src = this
-  return Enumerable.fromGenerator(function*() {
+  return EnumerableGenerators.fromGenerator(function*() {
     for (const item of src) {
       yield item
     }

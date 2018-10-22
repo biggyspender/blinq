@@ -1,4 +1,5 @@
 import { Enumerable } from '../Enumerable'
+import * as EnumerableGenerators from '../EnumerableGenerators'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -7,7 +8,7 @@ declare module '../Enumerable' {
 }
 
 function append<T>(this: Enumerable<T>, item: T): Enumerable<T> {
-  return this.concat(Enumerable.fromSingleValue(item))
+  return this.concat(EnumerableGenerators.fromSingleValue(item))
 }
 
 Enumerable.prototype.append = append

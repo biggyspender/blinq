@@ -1,4 +1,5 @@
-import { MapIterable, SetIterable } from '../src/Enumerable'
+import MapIterable from '../src/MapIterable'
+import SetIterable from '../src/SetIterable'
 import blinq from '../src/blinq'
 
 describe('set/map Iterables', () => {
