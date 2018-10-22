@@ -1,4 +1,4 @@
-import { Enumerable, IndexedSelector } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {

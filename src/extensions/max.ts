@@ -1,7 +1,9 @@
-import { Enumerable, IndexedSelector, getDefaultComparer } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
+import { IndexedSelector } from '../IndexedSelector'
 import { Comparer } from '../Comparer'
 import minMaxByImpl from './helpers/minMaxByImpl'
 import getIdentity from '../getIdentity'
+import getDefaultComparer from '../getDefaultComparer'
 import './firstOrDefault'
 
 const identity = getIdentity()

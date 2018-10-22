@@ -1,4 +1,6 @@
-import { Enumerable, IndexedSelector } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
+import { IndexedSelector } from '../IndexedSelector'
+
 import getIdentity from '../getIdentity'
 import './fullOuterGroupJoin'
 import './defaultIfEmpty'

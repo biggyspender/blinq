@@ -1,4 +1,5 @@
-import { Enumerable, IndexedSelector } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
+import { IndexedSelector } from '../IndexedSelector'
 import GroupedIterable from '../GroupedIterable'
 
 declare module '../Enumerable' {

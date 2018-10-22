@@ -1,6 +1,9 @@
-import { Enumerable, IndexedSelector, getDefaultComparer } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
 import { Comparer } from '../Comparer'
+import { IndexedSelector } from '../IndexedSelector'
 import minMaxByImpl from './helpers/minMaxByImpl'
+import getDefaultComparer from '../getDefaultComparer'
+
 const defaultComparer = getDefaultComparer()
 
 declare module '../Enumerable' {

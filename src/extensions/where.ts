@@ -1,4 +1,6 @@
-import { Enumerable, IndexedPredicate } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
+import { IndexedPredicate } from '../IndexedPredicate'
+
 import * as EnumerableGenerators from '../EnumerableGenerators'
 
 declare module '../Enumerable' {

@@ -1,6 +1,7 @@
-import { Enumerable, IndexedSelector } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
 import MapIterable from '../MapIterable'
 import ArrayIterable from '../ArrayIterable'
+import { IndexedSelector } from '../IndexedSelector'
 // import { Enumerable, IndexedSelector, getIdentity } from "../Enumerable"
 // const identity = getIdentity();
 

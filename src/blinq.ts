@@ -1,6 +1,7 @@
-import { Enumerable, getDefaultComparer } from './Enumerable'
+import { Enumerable } from './Enumerable'
 import * as EnumerableGenerators from './EnumerableGenerators'
 import getIdentity from './getIdentity'
+import getDefaultComparer from './getDefaultComparer'
 
 import './extensions/aggregate'
 import './extensions/all'

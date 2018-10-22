@@ -1,5 +1,6 @@
-import { Enumerable, IndexedSelector } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
 import GeneratorIterable from '../GeneratorIterable'
+import { IndexedSelector } from '../IndexedSelector'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {

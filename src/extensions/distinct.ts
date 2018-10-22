@@ -1,4 +1,4 @@
-import { Enumerable, getIdentity } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
 import './distinctBy'
 declare module '../Enumerable' {
   interface Enumerable<T> {

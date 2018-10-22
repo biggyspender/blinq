@@ -1,4 +1,5 @@
-import { Enumerable, IndexedPredicate } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
+import { IndexedPredicate } from '../IndexedPredicate'
 import '../extensions/any'
 
 declare module '../Enumerable' {

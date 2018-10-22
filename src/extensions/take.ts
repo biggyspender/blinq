@@ -1,4 +1,4 @@
-import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
+import { Enumerable } from '../Enumerable'
 import './takeWhile'
 declare module '../Enumerable' {
   interface Enumerable<T> {
