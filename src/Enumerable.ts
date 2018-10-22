@@ -344,26 +344,26 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return returnVal
   }
 
-  public max(
-    this: Enumerable<number>,
-    pred: IndexedPredicate<number> = this.truePredicate
-  ): number {
-    return this.where(pred)
-      .maxBy(x => x)
-      .first()
+  public max(): T | undefined
+  public max<TOut>(selector: IndexedSelector<T, TOut>, comparer?: Comparer<TOut>): TOut | undefined
+  public max<TOut>(
+    selector: IndexedSelector<T, T | TOut> = identity,
+    comparer: Comparer<T | TOut> | undefined = defaultComparer
+  ): T | TOut | undefined {
+    return minMaxByImpl(this.select(selector), x => x, (a, b) => comparer(a, b)).firstOrDefault()
   }
 
   public maxBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
     return minMaxByImpl(this, selector, (a, b) => (a > b ? 1 : a < b ? -1 : 0))
   }
 
-  public min(
-    this: Enumerable<number>,
-    pred: IndexedPredicate<number> = this.truePredicate
-  ): number {
-    return this.where(pred)
-      .minBy(x => x)
-      .first()
+  public min(): T | undefined
+  public min<TOut>(selector: IndexedSelector<T, TOut>, comparer?: Comparer<TOut>): TOut | undefined
+  public min<TOut>(
+    selector: IndexedSelector<T, T | TOut> = identity,
+    comparer: Comparer<T | TOut> = defaultComparer
+  ): T | TOut | undefined {
+    return minMaxByImpl(this.select(selector), x => x, (a, b) => -comparer(a, b)).firstOrDefault()
   }
 
   public minBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
@@ -770,4 +770,13 @@ function minMaxByImpl<T, TKey>(
 
   return new WrapperIterable(currentBest)
 }
-const identity = <T>(t: T) => t
+
+export function getIdentity() {
+  return <T>(t: T) => t
+}
+const identity = getIdentity()
+
+export function getDefaultComparer() {
+  return <T>(a: T, b: T): number => (a > b ? 1 : a < b ? -1 : 0)
+}
+const defaultComparer = getDefaultComparer()
