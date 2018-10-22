@@ -210,13 +210,29 @@ describe('blinq test', () => {
     expect(() => blinq.empty<number>().max()).toThrow()
     expect(blinq.fromSingleValue(1).max()).toBe(1)
     expect(blinq([5, 4, 3, 2, 1]).max()).toBe(5)
-    expect(blinq([5, 4, 3, 2, 1]).max(x => x < 4)).toBe(3)
+    expect(
+      blinq([5, 4, 3, 2, 1])
+        .select(x => blinq.repeat(x, 2).toArray())
+        .max(([x, _]) => x)
+    ).toBe(5)
+    expect(blinq([5, 4, 3, 2, 1]).max(x => x, (a, b) => -blinq.defaultComparer(a, b))).toBe(1)
   })
   it('min', () => {
     expect(() => blinq.empty<number>().min()).toThrow()
     expect(blinq.fromSingleValue(1).min()).toBe(1)
     expect(blinq([5, 4, 3, 2, 1]).min()).toBe(1)
-    expect(blinq([5, 4, 3, 2, 1]).min(x => x > 2)).toBe(3)
+    expect(
+      blinq([5, 4, 3, 2, 1])
+        .select(x => blinq.repeat(x, 2).toArray())
+        .min(([x, _]) => x)
+    ).toBe(1)
+
+    expect(blinq([5, 4, 3, 2, 1]).min(x => x, (a, b) => -blinq.defaultComparer(a, b))).toBe(5)
+  })
+  it('defaultComparer', () => {
+    expect(blinq.defaultComparer(0, 1)).toBe(-1)
+    expect(blinq.defaultComparer(1, 0)).toBe(1)
+    expect(blinq.defaultComparer(0, 0)).toBe(0)
   })
   it('reverse', () => {
     expect([...blinq([5, 4, 3, 2, 1]).reverse()]).toEqual([1, 2, 3, 4, 5])
