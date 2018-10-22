@@ -112,6 +112,9 @@ describe('blinq test', () => {
   it('repeatGenerate', () => {
     const it = blinq.repeatGenerate(i => i, 3)
     expect([...it]).toEqual([0, 1, 2])
+
+    const src = blinq.repeatGenerate(() => Math.random(), 1000)
+    expect(src.sequenceEqual(src)).toBeFalsy()
   })
   it('aggregate', () => {
     const v = blinq.range(0, 4).aggregate(0, (prev, curr) => prev + curr)
@@ -233,6 +236,17 @@ describe('blinq test', () => {
     expect(blinq.defaultComparer(0, 1)).toBe(-1)
     expect(blinq.defaultComparer(1, 0)).toBe(1)
     expect(blinq.defaultComparer(0, 0)).toBe(0)
+  })
+  it('identity', () => {
+    const src = blinq.repeatGenerate(() => Math.random(), 1000)
+    src.forEach(x => {
+      expect(blinq.identity(x)).toBe(x)
+    })
+    src.forEach(x => {
+      const str = x.toString()
+      expect(/^-?\d+(\.\d+)?$/.test(str)).toBeTruthy()
+      expect(blinq.identity(str)).toBe(str)
+    })
   })
   it('reverse', () => {
     expect([...blinq([5, 4, 3, 2, 1]).reverse()]).toEqual([1, 2, 3, 4, 5])
