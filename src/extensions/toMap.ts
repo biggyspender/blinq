@@ -1,6 +1,5 @@
-import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
+import { Enumerable, IndexedSelector } from '../Enumerable'
 import MapIterable from '../MapIterable'
-const identity = getIdentity()
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -20,7 +19,6 @@ function toMap<T, TKey, TValue>(
   const map = new Map<TKey, TValue>()
   let i = 0
   for (const x of this) {
-    const idx = i++
     const key = keySelector(x, i)
     if (map.has(key)) {
       throw Error('duplicate key')

@@ -1,6 +1,7 @@
-import { Enumerable, IndexedSelector, getIdentity, getDefaultComparer } from '../Enumerable'
+import { Enumerable, IndexedSelector, getDefaultComparer } from '../Enumerable'
 import { Comparer } from '../Comparer'
 import minMaxByImpl from './helpers/minMaxByImpl'
+import getIdentity from '../getIdentity'
 import './firstOrDefault'
 
 const identity = getIdentity()
@@ -26,6 +27,7 @@ function min<T, TOut>(selector: IndexedSelector<T, TOut>): TOut | undefined
 // tslint:disable-next-line:unified-signatures
 function min<T, TOut>(
   selector: IndexedSelector<T, TOut>,
+  // tslint:disable-next-line:unified-signatures
   comparer: Comparer<TOut>
 ): TOut | undefined
 function min<T, TOut>(

@@ -1,5 +1,4 @@
-import { Enumerable, IndexedSelector, getIdentity, IndexedPredicate } from '../Enumerable'
-const identity = getIdentity()
+import { Enumerable, IndexedPredicate } from '../Enumerable'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -12,7 +11,7 @@ declare module '../Enumerable' {
 function firstOrDefault<T>(this: Enumerable<T>): T | undefined
 function firstOrDefault<T>(
   this: Enumerable<T>,
-  pred: IndexedPredicate<T> = x => true
+  pred: IndexedPredicate<T> = () => true
 ): T | undefined {
   let i = 0
   for (const item of this) {

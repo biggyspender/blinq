@@ -1,4 +1,4 @@
-import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
+import { Enumerable, IndexedSelector } from '../Enumerable'
 import * as EnumerableGenerators from '../EnumerableGenerators'
 
 declare module '../Enumerable' {

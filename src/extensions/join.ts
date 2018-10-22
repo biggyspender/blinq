@@ -1,5 +1,4 @@
-import { Enumerable, IndexedSelector, getIdentity } from '../Enumerable'
-const identity = getIdentity()
+import { Enumerable, IndexedSelector } from '../Enumerable'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
