@@ -353,7 +353,6 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return minMaxByImpl(this.select(selector), x => x, comparer).firstOrDefault()
   }
 
-  public maxBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T>
   public maxBy<TKey>(
     selector: IndexedSelector<T, TKey>,
     comparer: Comparer<TKey> = defaultComparer
