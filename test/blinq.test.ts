@@ -518,4 +518,12 @@ describe('blinq test', () => {
         .toArray()
     ).toEqual([3, 1, 2])
   })
+  it('flatten', () => {
+    expect(
+      blinq([1, 2])
+        .select(x => blinq.repeat(x, 2))
+        .flatten()
+        .toArray()
+    ).toEqual([1, 1, 2, 2])
+  })
 })

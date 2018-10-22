@@ -1,5 +1,4 @@
 import { ComparerBuilder, ThenComparerBuilder } from './ComparerBuilder'
-import { Comparer } from './Comparer'
 export type IndexedPredicate<T> = (x: T, i: number) => Boolean
 export type IndexedSelector<T, TOut> = (x: T, i: number) => TOut
 export abstract class Enumerable<T> implements Iterable<T> {
@@ -67,66 +66,6 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return v
   }
 
-  public all(pred: IndexedPredicate<T>): boolean {
-    return !this.any((item, i) => !pred(item, i))
-  }
-
-  public any(pred: IndexedPredicate<T> = this.truePredicate): boolean {
-    let i = 0
-    for (const item of this) {
-      if (pred(item, i++)) {
-        return true
-      }
-    }
-    return false
-  }
-  public append(item: T): Enumerable<T> {
-    return this.concat(Enumerable.fromSingleValue(item))
-  }
-
-  public average(this: Enumerable<number>): number {
-    const f = this.aggregate(
-      {
-        tot: 0,
-        count: 0
-      },
-      (acc, val) => {
-        acc.tot += val
-        acc.count++
-        return acc
-      }
-    )
-    if (f.count === 0) {
-      throw Error('sequence contains no elements')
-    }
-    return f.tot / f.count
-  }
-
-  public concat(...sequences: Array<Iterable<T>>): Enumerable<T> {
-    const src = this
-    return Enumerable.fromGenerator(function*() {
-      for (const item of src) {
-        yield item
-      }
-      for (const seq of sequences) {
-        for (const item of seq) {
-          yield item
-        }
-      }
-    })
-  }
-
-  public count(pred: IndexedPredicate<T> = this.truePredicate): number {
-    let c = 0
-    let i = 0
-    for (const item of this) {
-      if (pred(item, i++)) {
-        ++c
-      }
-    }
-    return c
-  }
-
   public defaultIfEmpty(): Enumerable<T | undefined> {
     const t = this
     return Enumerable.fromGenerator(function*() {
@@ -139,102 +78,6 @@ export abstract class Enumerable<T> implements Iterable<T> {
         yield undefined
       }
     })
-  }
-
-  public distinct(): Enumerable<T> {
-    return this.distinctBy(x => x)
-  }
-
-  public distinctBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
-    const src = this
-    return new GeneratorIterable(function*() {
-      const set = new Set<TKey>()
-      let i = 0
-      for (const x of src) {
-        const idx = i++
-        const key = selector(x, idx)
-        if (set.has(key)) {
-          continue
-        }
-        set.add(key)
-        yield x
-      }
-    })
-  }
-
-  public elementAt(index: number): T {
-    return this.single((x, i) => i === index)
-  }
-
-  public except(seq: Iterable<T>): Enumerable<T> {
-    const set: Set<T> = new Set<T>()
-    for (const item of seq) {
-      set.add(item)
-    }
-    return this.where(item => !set.has(item))
-  }
-
-  public first(pred: IndexedPredicate<T> = this.truePredicate): T {
-    let i = 0
-    for (const item of this) {
-      if (pred(item, i++)) {
-        return item
-      }
-    }
-    throw Error('sequence contains no elements')
-  }
-
-  public firstOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
-    let i = 0
-    for (const item of this) {
-      if (pred(item, i++)) {
-        return item
-      }
-    }
-    return undefined
-  }
-
-  public forEach(action: (x: T, i: number) => void): void {
-    const src = this
-    let i = 0
-    for (const x of src) {
-      const currentIdx = i++
-      action(x, currentIdx)
-    }
-  }
-
-  public fullOuterJoin<TRight, TKey, TOut>(
-    rightSeq: Iterable<TRight>,
-    leftKeySelector: IndexedSelector<T, TKey>,
-    rightKeySelector: IndexedSelector<TRight, TKey>,
-    selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
-  ): Enumerable<TOut> {
-    return this.fullOuterGroupJoin(rightSeq, leftKeySelector, rightKeySelector, (lft, rgt, i) =>
-      lft.defaultIfEmpty().selectMany(l => rgt.defaultIfEmpty().select(r => selector(l, r, i)))
-    ).selectMany(identity)
-  }
-
-  public fullOuterGroupJoin<TRight, TKey, TOut>(
-    rightSeq: Iterable<TRight>,
-    leftKeySelector: IndexedSelector<T, TKey>,
-    rightKeySelector: IndexedSelector<TRight, TKey>,
-    selector: (o: Enumerable<T>, v: Enumerable<TRight>, k: TKey) => TOut
-  ): Enumerable<TOut> {
-    const right = Enumerable.fromIterable(rightSeq)
-    const leftLookup = this.toLookup(leftKeySelector)
-    const rightLookup = right.toLookup(rightKeySelector)
-    const allKeys = leftLookup
-      .select(([key, _]) => key)
-      .concat(rightLookup.select(([key, _]) => key))
-      .distinct()
-    return allKeys
-      .select(key => ({ key, leftItem: leftLookup.get(key) || Enumerable.empty<T>() }))
-      .select(({ key, leftItem }) => ({
-        key,
-        leftItem,
-        rightItem: rightLookup.get(key) || Enumerable.empty<TRight>()
-      }))
-      .select(x => selector(x.leftItem, x.rightItem, x.key))
   }
 
   public groupBy<TKey>(
@@ -271,23 +114,6 @@ export abstract class Enumerable<T> implements Iterable<T> {
     })
   }
 
-  public intersect(seq: Iterable<T>): Enumerable<T> {
-    const set: Set<T> = new Set()
-    for (const item of seq) {
-      set.add(item)
-    }
-    return this.where(item => set.has(item))
-  }
-
-  public isSubsetOf(seq: Iterable<T>): boolean {
-    const set = new Set(seq)
-    return this.all(x => set.has(x))
-  }
-
-  public isSupersetOf(seq: Iterable<T>): boolean {
-    return Enumerable.fromIterable(seq).isSubsetOf(this)
-  }
-
   public leftOuterJoin<TInner, TKey, TOut>(
     innerSeq: Iterable<TInner>,
     outerKeySelector: IndexedSelector<T, TKey>,
@@ -312,70 +138,6 @@ export abstract class Enumerable<T> implements Iterable<T> {
       outer,
       innerSeq
     })).selectMany(({ outer, innerSeq }) => innerSeq.select(i => selector(outer, i)))
-  }
-
-  public last(pred: IndexedPredicate<T> = this.truePredicate): T {
-    let i = 0
-    let returnVal
-    let found = false
-    for (const item of this) {
-      if (pred(item, i++)) {
-        returnVal = item
-        found = true
-      }
-    }
-    if (found && returnVal) {
-      return returnVal
-    } else {
-      throw Error('sequence contains no elements')
-    }
-  }
-
-  public lastOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
-    let i = 0
-    let returnVal
-    for (const item of this) {
-      if (pred(item, i++)) {
-        returnVal = item
-      }
-    }
-    return returnVal
-  }
-
-  public max(): T | undefined
-  public max<TOut>(selector: IndexedSelector<T, TOut>): TOut | undefined
-  // tslint:disable-next-line:unified-signatures
-  public max<TOut>(selector: IndexedSelector<T, TOut>, comparer: Comparer<TOut>): TOut | undefined
-  public max<TOut>(
-    selector: IndexedSelector<T, T | TOut> = identity,
-    comparer: Comparer<T | TOut> | undefined = defaultComparer
-  ): T | TOut | undefined {
-    return minMaxByImpl(this.select(selector), x => x, comparer).firstOrDefault()
-  }
-
-  public maxBy<TKey>(
-    selector: IndexedSelector<T, TKey>,
-    comparer: Comparer<TKey> = defaultComparer
-  ): Enumerable<T> {
-    return minMaxByImpl(this, selector, comparer)
-  }
-
-  public min(): T | undefined
-  public min<TOut>(selector: IndexedSelector<T, TOut>): TOut | undefined
-  // tslint:disable-next-line:unified-signatures
-  public min<TOut>(selector: IndexedSelector<T, TOut>, comparer: Comparer<TOut>): TOut | undefined
-  public min<TOut>(
-    selector: IndexedSelector<T, T | TOut> = identity,
-    comparer: Comparer<T | TOut> = defaultComparer
-  ): T | TOut | undefined {
-    return minMaxByImpl(this.select(selector), x => x, (a, b) => -comparer(a, b)).firstOrDefault()
-  }
-
-  public minBy<TKey>(
-    selector: IndexedSelector<T, TKey>,
-    comparer: Comparer<TKey> = defaultComparer
-  ): Enumerable<T> {
-    return minMaxByImpl(this, selector, (a, b) => -comparer(a, b))
   }
 
   public orderBy<TCmp>(selector: (x: T) => TCmp): OrderedIterable<T> {
@@ -494,10 +256,6 @@ export abstract class Enumerable<T> implements Iterable<T> {
         yield item
       }
     })
-  }
-
-  public sum(this: Enumerable<number>): number {
-    return this.aggregate(0, (acc, val) => acc + val)
   }
 
   public take(numItems: number): Enumerable<T> {
@@ -746,37 +504,6 @@ class OrderedIterable<T> extends GeneratorIterable<T> {
     const newBuilder = this.comparerBuilder.thenKeyDescending(selector)
     return new OrderedIterable(this.src, newBuilder)
   }
-}
-
-function minMaxByImpl<T, TKey>(
-  src: Iterable<T>,
-  selector: IndexedSelector<T, TKey>,
-  comparer: Comparer<TKey>
-): Enumerable<T> {
-  let currentBestKey: TKey | undefined
-  let currentBest: T[] = []
-  let i = 0
-  for (const item of src) {
-    const idx = i++
-    const key = selector(item, idx)
-    if (typeof currentBestKey === 'undefined') {
-      currentBest.push(item)
-      currentBestKey = key
-    } else {
-      const comparison = comparer(key, currentBestKey)
-      if (comparison > 0) {
-        currentBest = [item]
-        currentBestKey = key
-      } else if (comparison === 0) {
-        currentBest.push(item)
-      }
-    }
-  }
-  if (currentBest.length === 0) {
-    throw Error('sequence contains no elements')
-  }
-
-  return new WrapperIterable(currentBest)
 }
 
 export function getIdentity() {
