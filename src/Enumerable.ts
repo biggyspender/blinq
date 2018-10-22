@@ -345,7 +345,9 @@ export abstract class Enumerable<T> implements Iterable<T> {
   }
 
   public max(): T | undefined
-  public max<TOut>(selector: IndexedSelector<T, TOut>, comparer?: Comparer<TOut>): TOut | undefined
+  public max<TOut>(selector: IndexedSelector<T, TOut>): TOut | undefined
+  // tslint:disable-next-line:unified-signatures
+  public max<TOut>(selector: IndexedSelector<T, TOut>, comparer: Comparer<TOut>): TOut | undefined
   public max<TOut>(
     selector: IndexedSelector<T, T | TOut> = identity,
     comparer: Comparer<T | TOut> | undefined = defaultComparer
@@ -358,7 +360,9 @@ export abstract class Enumerable<T> implements Iterable<T> {
   }
 
   public min(): T | undefined
-  public min<TOut>(selector: IndexedSelector<T, TOut>, comparer?: Comparer<TOut>): TOut | undefined
+  public min<TOut>(selector: IndexedSelector<T, TOut>): TOut | undefined
+  // tslint:disable-next-line:unified-signatures
+  public min<TOut>(selector: IndexedSelector<T, TOut>, comparer: Comparer<TOut>): TOut | undefined
   public min<TOut>(
     selector: IndexedSelector<T, T | TOut> = identity,
     comparer: Comparer<T | TOut> = defaultComparer
