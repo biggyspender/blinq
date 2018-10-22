@@ -492,6 +492,17 @@ describe('blinq test', () => {
         .maxBy(x => x)
         .toArray()
     ).toEqual([0, 0])
+    const inverseComparer = <T>(a: T, b: T) => blinq.defaultComparer(b, a)
+    expect(
+      blinq(arr)
+        .maxBy(x => x.age, inverseComparer)
+        .first().name
+    ).toBe('luke')
+    expect(
+      blinq(arr)
+        .minBy(x => x.age, inverseComparer)
+        .first().name
+    ).toBe('nicole')
   })
   it('append', () => {
     expect(

@@ -10,7 +10,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
   public static fromGenerator<T>(gen: () => Iterable<T>): Enumerable<T> {
     return new GeneratorIterable<T>(function*() {
       const it = gen()
-      for (let x of it) {
+      for (const x of it) {
         yield x
       }
     })
@@ -18,7 +18,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
   public static fromIterable<T>(value: Iterable<T>): Enumerable<T> {
     return Enumerable.fromGenerator(function*() {
-      for (let x of value) {
+      for (const x of value) {
         yield x
       }
     })
@@ -61,7 +61,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
   public aggregate<TOut>(seed: TOut, aggFunc: (prev: TOut, curr: T, idx: number) => TOut): TOut {
     let v = seed
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       v = aggFunc(v, item, i++)
     }
     return v
@@ -73,7 +73,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
   public any(pred: IndexedPredicate<T> = this.truePredicate): boolean {
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         return true
       }
@@ -105,11 +105,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
   public concat(...sequences: Array<Iterable<T>>): Enumerable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
-      for (let item of src) {
+      for (const item of src) {
         yield item
       }
-      for (let seq of sequences) {
-        for (let item of seq) {
+      for (const seq of sequences) {
+        for (const item of seq) {
           yield item
         }
       }
@@ -119,7 +119,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
   public count(pred: IndexedPredicate<T> = this.truePredicate): number {
     let c = 0
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         ++c
       }
@@ -131,7 +131,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     const t = this
     return Enumerable.fromGenerator(function*() {
       let yielded = false
-      for (let x of t) {
+      for (const x of t) {
         yield x
         yielded = true
       }
@@ -150,7 +150,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return new GeneratorIterable(function*() {
       const set = new Set<TKey>()
       let i = 0
-      for (let x of src) {
+      for (const x of src) {
         const idx = i++
         const key = selector(x, idx)
         if (set.has(key)) {
@@ -168,7 +168,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
   public except(seq: Iterable<T>): Enumerable<T> {
     const set: Set<T> = new Set<T>()
-    for (let item of seq) {
+    for (const item of seq) {
       set.add(item)
     }
     return this.where(item => !set.has(item))
@@ -176,7 +176,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
   public first(pred: IndexedPredicate<T> = this.truePredicate): T {
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         return item
       }
@@ -186,7 +186,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
   public firstOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         return item
       }
@@ -209,11 +209,9 @@ export abstract class Enumerable<T> implements Iterable<T> {
     rightKeySelector: IndexedSelector<TRight, TKey>,
     selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
   ): Enumerable<TOut> {
-    return this.fullOuterGroupJoin(rightSeq, leftKeySelector, rightKeySelector, (lft, rgt, i) => ({
-      lft: lft.defaultIfEmpty(),
-      rgt: rgt.defaultIfEmpty(),
-      i
-    })).selectMany(x => x.lft.selectMany(l => x.rgt.select(r => selector(l, r, x.i))))
+    return this.fullOuterGroupJoin(rightSeq, leftKeySelector, rightKeySelector, (lft, rgt, i) =>
+      lft.defaultIfEmpty().selectMany(l => rgt.defaultIfEmpty().select(r => selector(l, r, i)))
+    ).selectMany(identity)
   }
 
   public fullOuterGroupJoin<TRight, TKey, TOut>(
@@ -231,10 +229,10 @@ export abstract class Enumerable<T> implements Iterable<T> {
       .distinct()
     return allKeys
       .select(key => ({ key, leftItem: leftLookup.get(key) || Enumerable.empty<T>() }))
-      .select(x => ({
-        key: x.key,
-        leftItem: x.leftItem,
-        rightItem: rightLookup.get(x.key) || Enumerable.empty<TRight>()
+      .select(({ key, leftItem }) => ({
+        key,
+        leftItem,
+        rightItem: rightLookup.get(key) || Enumerable.empty<TRight>()
       }))
       .select(x => selector(x.leftItem, x.rightItem, x.key))
   }
@@ -263,7 +261,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
     return Enumerable.fromGenerator(function*() {
       let i = 0
-      for (let outerItem of outerSeq) {
+      for (const outerItem of outerSeq) {
         let idx = i++
         const key = outerKeySelector(outerItem, idx)
         let innerItems: Enumerable<TInner> = lookup.get(key) || Enumerable.empty()
@@ -275,7 +273,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
   public intersect(seq: Iterable<T>): Enumerable<T> {
     const set: Set<T> = new Set()
-    for (let item of seq) {
+    for (const item of seq) {
       set.add(item)
     }
     return this.where(item => set.has(item))
@@ -320,7 +318,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     let i = 0
     let returnVal
     let found = false
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         returnVal = item
         found = true
@@ -336,7 +334,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
   public lastOrDefault(pred: IndexedPredicate<T> = this.truePredicate): T | undefined {
     let i = 0
     let returnVal
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         returnVal = item
       }
@@ -352,11 +350,15 @@ export abstract class Enumerable<T> implements Iterable<T> {
     selector: IndexedSelector<T, T | TOut> = identity,
     comparer: Comparer<T | TOut> | undefined = defaultComparer
   ): T | TOut | undefined {
-    return minMaxByImpl(this.select(selector), x => x, (a, b) => comparer(a, b)).firstOrDefault()
+    return minMaxByImpl(this.select(selector), x => x, comparer).firstOrDefault()
   }
 
-  public maxBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
-    return minMaxByImpl(this, selector, (a, b) => (a > b ? 1 : a < b ? -1 : 0))
+  public maxBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T>
+  public maxBy<TKey>(
+    selector: IndexedSelector<T, TKey>,
+    comparer: Comparer<TKey> = defaultComparer
+  ): Enumerable<T> {
+    return minMaxByImpl(this, selector, comparer)
   }
 
   public min(): T | undefined
@@ -370,8 +372,11 @@ export abstract class Enumerable<T> implements Iterable<T> {
     return minMaxByImpl(this.select(selector), x => x, (a, b) => -comparer(a, b)).firstOrDefault()
   }
 
-  public minBy<TKey>(selector: IndexedSelector<T, TKey>): Enumerable<T> {
-    return minMaxByImpl(this, selector, (a, b) => (a < b ? 1 : a > b ? -1 : 0))
+  public minBy<TKey>(
+    selector: IndexedSelector<T, TKey>,
+    comparer: Comparer<TKey> = defaultComparer
+  ): Enumerable<T> {
+    return minMaxByImpl(this, selector, (a, b) => -comparer(a, b))
   }
 
   public orderBy<TCmp>(selector: (x: T) => TCmp): OrderedIterable<T> {
@@ -396,7 +401,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let c = 0
-      for (let x of src) {
+      for (const x of src) {
         yield selector(x, c++)
       }
     })
@@ -406,8 +411,8 @@ export abstract class Enumerable<T> implements Iterable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
-      for (let seq of src) {
-        for (let item of selector(seq, i++)) {
+      for (const seq of src) {
+        for (const item of selector(seq, i++)) {
           yield item
         }
       }
@@ -436,7 +441,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     let itemCount = 0
     let foundItem
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         ++itemCount
         if (itemCount > 1) {
@@ -458,7 +463,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     let itemCount = 0
     let foundItem
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       if (pred(item, i++)) {
         ++itemCount
         if (itemCount > 1) {
@@ -482,7 +487,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
-      for (let item of src) {
+      for (const item of src) {
         const result = pred(item, i++)
         if (result) {
           continue
@@ -504,7 +509,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
-      for (let item of src) {
+      for (const item of src) {
         const result = pred(item, i++)
         if (!result) {
           break
@@ -531,7 +536,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
 
     const map: Map<TKey, ArrayIterable<T | TValue>> = new Map()
     let i = 0
-    for (let item of this) {
+    for (const item of this) {
       let currentIdx = i++
       const key = keySelector(item, currentIdx)
       let arr: ArrayIterable<T | TValue>
@@ -549,7 +554,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
   ): MapIterable<TKey, TValue> {
     const map = new Map<TKey, TValue>()
     let i = 0
-    for (let x of this) {
+    for (const x of this) {
       const idx = i++
       const key = keySelector(x, i)
       if (map.has(key)) {
@@ -568,7 +573,7 @@ export abstract class Enumerable<T> implements Iterable<T> {
     const src = this
     return Enumerable.fromGenerator(function*() {
       let i = 0
-      for (let x of src) {
+      for (const x of src) {
         if (pred(x, i++)) {
           yield x
         }
@@ -616,7 +621,7 @@ class ArrayIterable<T> extends GeneratorIterable<T> {
     /* istanbul ignore next */
     {
       super(function*() {
-        for (let x of arr) {
+        for (const x of arr) {
           yield x
         }
       })
@@ -633,7 +638,7 @@ class WrapperIterable<T> extends GeneratorIterable<T> {
     /* istanbul ignore next */
     {
       super(function*() {
-        for (let x of it) {
+        for (const x of it) {
           yield x
         }
       })
@@ -725,7 +730,7 @@ class OrderedIterable<T> extends GeneratorIterable<T> {
     {
       super(function*() {
         const arr = [...src].sort(comparer)
-        for (let x of arr) {
+        for (const x of arr) {
           yield x
         }
       })
@@ -752,7 +757,7 @@ function minMaxByImpl<T, TKey>(
   let currentBestKey: TKey | undefined
   let currentBest: T[] = []
   let i = 0
-  for (let item of src) {
+  for (const item of src) {
     const idx = i++
     const key = selector(item, idx)
     if (typeof currentBestKey === 'undefined') {
