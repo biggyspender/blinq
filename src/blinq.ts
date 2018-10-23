@@ -54,6 +54,7 @@ import './extensions/toMap'
 import './extensions/union'
 import './extensions/where'
 import './extensions/zip'
+import './extensions/zipAll'
 
 function blinq<T>(it: Iterable<T>) {
   return EnumerableGenerators.fromIterable(it)

@@ -1,4 +1,5 @@
 import blinq from '../src/blinq'
+import { Enumerable } from '../src/Enumerable'
 import { Date } from './Date'
 
 describe('blinq test', () => {
@@ -525,5 +526,18 @@ describe('blinq test', () => {
         .flatten()
         .toArray()
     ).toEqual([1, 1, 2, 2])
+  })
+  it('zipAll', () => {
+    const b = blinq([blinq([1, 2]), blinq([1, 2, 3])])
+
+    expect(
+      b
+        .zipAll()
+        .select(x => x.toArray())
+        .toArray()
+    ).toEqual([[1, 1], [2, 2]])
+
+    const c = blinq.empty<Enumerable<number>>()
+    expect([...c]).toEqual([])
   })
 })

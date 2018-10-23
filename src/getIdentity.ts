@@ -1,3 +1,3 @@
 export default function getIdentity() {
-  return <T>(t: T) => t
+  return <T>(t: T): T => t
 }

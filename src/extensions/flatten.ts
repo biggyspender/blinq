@@ -6,8 +6,8 @@ declare module '../Enumerable' {
   }
 }
 
-function f<T>(this: Enumerable<Enumerable<T>>): Enumerable<T> {
+function flatten<T>(this: Enumerable<Enumerable<T>>): Enumerable<T> {
   return this.selectMany(x => x)
 }
 
-Enumerable.prototype.flatten = f
+Enumerable.prototype.flatten = flatten
