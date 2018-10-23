@@ -540,4 +540,11 @@ describe('blinq test', () => {
     const c = blinq.empty<Enumerable<number>>()
     expect([...c]).toEqual([])
   })
+  it('groupAdjacent', () => {
+    expect(
+      blinq([1, 1, 2, 2, 2, 3, 3, 3, 3, 2, 2])
+        .groupAdjacent(x => x, x => x, (key, items) => items.toArray())
+        .toArray()
+    ).toEqual([[1, 1], [2, 2, 2], [3, 3, 3, 3], [2, 2]])
+  })
 })
