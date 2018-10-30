@@ -8,6 +8,7 @@ export default function minMaxByImpl<T, TKey>(
   selector: IndexedSelector<T, TKey>,
   comparer: Comparer<TKey>
 ): Enumerable<T> {
+  let x = 0
   let currentBestKey: TKey | undefined
   let currentBest: T[] = []
   let i = 0
