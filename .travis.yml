@@ -6,7 +6,7 @@ branches:
 cache:
   yarn: false
   directories:
-    - node_modules
+#    - node_modules
 notifications:
   email: true
 node_js:
