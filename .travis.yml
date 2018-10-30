@@ -4,13 +4,13 @@ branches:
     - master
     - /^greenkeeper/.*$/
 cache:
-  yarn: true
+  yarn: false
   directories:
     - node_modules
 notifications:
   email: false
 node_js:
-  - node
+  - "10"
 script:
   - npm run test:prod && npm run build
 after_success:
