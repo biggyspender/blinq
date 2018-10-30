@@ -23,7 +23,7 @@ function groupAdjacent<TSource, TKey, TElement, TResult>(
 ): Enumerable<TResult> {
   const source = this
   // nasty coverage edge-case whereby transformation to ES5 destroys istanbul comment, so we need to put
-  // it on wider scope. ugh.
+  // it on wider scope. ugh.a
   return EnumerableGenerators.fromGenerator(
     /* istanbul ignore next */ function*() {
       const iterator = source[Symbol.iterator]()
