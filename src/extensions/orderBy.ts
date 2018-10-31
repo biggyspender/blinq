@@ -7,7 +7,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function orderBy<T, TCmp>(this: Enumerable<T>, selector: (x: T) => TCmp): OrderedIterable<T> {
   const builder = ComparerBuilder.create<T>().sortKey(selector)
   return new OrderedIterable<T>(this, builder)

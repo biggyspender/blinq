@@ -7,7 +7,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function isSupersetOf<T>(this: Enumerable<T>, seq: Iterable<T>): boolean {
   return EnumerableGenerators.fromIterable(seq).isSubsetOf(this)
 }

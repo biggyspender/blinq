@@ -7,7 +7,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function orderByDescending<T, TCmp>(
   this: Enumerable<T>,
   selector: (x: T) => TCmp

@@ -6,7 +6,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function toArray<T>(this: Enumerable<T>): T[] {
   return [...this]
 }

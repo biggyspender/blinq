@@ -9,7 +9,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function single<T>(this: Enumerable<T>, pred: IndexedPredicate<T> = x => true): T {
   let itemCount = 0
   let foundItem

@@ -11,7 +11,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function groupBy<T, TKey>(
   this: Enumerable<T>,
   keySelector: IndexedSelector<T, TKey>

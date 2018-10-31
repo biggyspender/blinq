@@ -13,7 +13,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function groupJoin<T, TInner, TKey, TOut>(
   this: Enumerable<T>,
   innerSeq: Iterable<TInner>,

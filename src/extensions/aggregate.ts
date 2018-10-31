@@ -6,7 +6,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function aggregate<T, TOut>(
   this: Enumerable<T>,
   seed: TOut,

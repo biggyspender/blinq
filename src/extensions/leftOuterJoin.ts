@@ -14,7 +14,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function leftOuterJoin<T, TInner, TKey, TOut>(
   this: Enumerable<T>,
   innerSeq: Iterable<TInner>,

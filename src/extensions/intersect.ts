@@ -6,7 +6,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function intersect<T>(this: Enumerable<T>, seq: Iterable<T>): Enumerable<T> {
   const set: Set<T> = new Set()
   for (const item of seq) {

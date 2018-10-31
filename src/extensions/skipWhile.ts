@@ -8,7 +8,6 @@ declare module '../Enumerable' {
   }
 }
 
-// <T>(this:Enumerable<T>,
 function skipWhile<T>(this: Enumerable<T>, pred: IndexedPredicate<T>): Enumerable<T> {
   const src = this
   return EnumerableGenerators.fromGenerator(function*() {
