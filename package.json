@@ -5,7 +5,7 @@
   "keywords": [],
   "main": "dist/blinq.umd.js",
   "module": "dist/blinq.es5.js",
-  "typings": "dist/types/blinq.d.ts",
+  "typings": "dist/types/src/blinq.d.ts",
   "files": [
     "dist"
   ],
