@@ -96,6 +96,7 @@
     "jest-config": "^23.6.0",
     "lint-staged": "^7.3.0",
     "lodash.camelcase": "^4.3.0",
+    "merge": ">=1.2.1",
     "prettier": "^1.14.3",
     "prompt": "^1.0.0",
     "replace-in-file": "^3.4.2",
