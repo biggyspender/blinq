@@ -1,6 +1,6 @@
 import MapIterable from '../src/MapIterable'
 import SetIterable from '../src/SetIterable'
-import blinq from '../src/blinq'
+import { blinq, range } from '../src/blinq'
 
 describe('set/map Iterables', () => {
   it('MapIterable', () => {
@@ -18,7 +18,7 @@ describe('set/map Iterables', () => {
     expect(mapIter.has('onee')).toBeFalsy()
   })
   it('SetIterable', () => {
-    const set: Set<number> = new Set(blinq.range(0, 2))
+    const set: Set<number> = new Set(range(0, 2))
 
     const setIter = new SetIterable(set)
 
