@@ -1,5 +1,4 @@
 import { ComparerBuilder } from '../src/ComparerBuilder'
-import blinq from '../src/blinq'
 import { Date } from './Date'
 
 describe('ComparerBuilder', () => {
