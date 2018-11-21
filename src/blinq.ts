@@ -60,16 +60,14 @@ import './extensions/zipAll'
 function blinq<T>(it: Iterable<T>) {
   return EnumerableGenerators.fromIterable(it)
 }
-/* istanbul ignore next */
-namespace blinq {
-  export const empty = EnumerableGenerators.empty
-  export const fromGenerator = EnumerableGenerators.fromGenerator
-  export const fromSingleValue = EnumerableGenerators.fromSingleValue
-  export const range = EnumerableGenerators.range
-  export const repeatGenerate = EnumerableGenerators.repeatGenerate
-  export const repeat = EnumerableGenerators.repeat
-  export const defaultComparer = getDefaultComparer()
-  export const identity = getIdentity()
-}
 
-export default blinq
+export default Object.assign(blinq, {
+  empty: EnumerableGenerators.empty,
+  fromGenerator: EnumerableGenerators.fromGenerator,
+  fromSingleValue: EnumerableGenerators.fromSingleValue,
+  range: EnumerableGenerators.range,
+  repeatGenerate: EnumerableGenerators.repeatGenerate,
+  repeat: EnumerableGenerators.repeat,
+  defaultComparer: getDefaultComparer(),
+  identity: getIdentity()
+})
