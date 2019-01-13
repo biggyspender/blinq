@@ -40,6 +40,10 @@ Now, just wrap your iterable with a call to `blinq(myIterable)`, and start trans
     const squaresBelowTen = someNumbers.select(n => n * n).where(n => n < 10);
     const arr = squaresBelowTen.toArray();
     console.log(arr);
+  
+or even spread your results into an array:
+
+    const arr2 = [...squaresBelowTen]
 
 #### More examples:
 
