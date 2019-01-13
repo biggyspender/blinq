@@ -1,13 +1,9 @@
-# blinq
-
-## A type-safe, linq inspired library for typescript and javascript
+# A strongly typed TypeScript implementation of Microsoft dotnet's LINQ to Objects using ES6 iterables.
 
 With the advent of javascript iterators and generators, its possible to pipe sequences through a bunch of transformations without materializing collections (arrays) for the intermediate steps. This library attempts to recreate the dotnet linq-to-objects api to provide a number of standard operations on iterable sequences.
 
 [![Build Status](https://travis-ci.org/biggyspender/blinq.svg?branch=master)](https://travis-ci.org/biggyspender/blinq)
 [![Coverage Status](https://coveralls.io/repos/github/biggyspender/blinq/badge.svg?branch=master)](https://coveralls.io/github/biggyspender/blinq?branch=master)
-
-A strongly typed TypeScript implementation of Microsoft dotnet's LINQ to Objects using ES6 iterables.
 
 NPM package can be downloaded [here](https://www.npmjs.com/package/blinq).
 
