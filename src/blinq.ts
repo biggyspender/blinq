@@ -1,4 +1,4 @@
-import { Enumerable } from './Enumerable'
+// blinq
 import * as EnumerableGenerators from './EnumerableGenerators'
 import getIdentity from './getIdentity'
 import getDefaultComparer from './getDefaultComparer'
