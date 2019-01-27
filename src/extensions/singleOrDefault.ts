@@ -9,13 +9,14 @@ declare module '../Enumerable' {
   }
 }
 
-//
+const dummy: any = {}
+
 function singleOrDefault<T>(
   this: Enumerable<T>,
   pred: IndexedPredicate<T> = x => true
 ): T | undefined {
   let itemCount = 0
-  let foundItem
+  let foundItem = dummy
   let i = 0
   for (const item of this) {
     if (pred(item, i++)) {
@@ -27,7 +28,6 @@ function singleOrDefault<T>(
     }
   }
   if (itemCount === 1) {
-    // ReSharper disable once UsageOfPossiblyUnassignedValue
     return foundItem
   }
   return undefined

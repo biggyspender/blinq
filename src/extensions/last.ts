@@ -8,10 +8,10 @@ declare module '../Enumerable' {
     last<T>(this: Enumerable<T>, pred: IndexedPredicate<T>): T
   }
 }
-
+const dummy: any = {}
 function last<T>(this: Enumerable<T>, pred: IndexedPredicate<T> = x => true): T {
   let i = 0
-  let returnVal
+  let returnVal = dummy
   let found = false
   for (const item of this) {
     if (pred(item, i++)) {
@@ -19,7 +19,7 @@ function last<T>(this: Enumerable<T>, pred: IndexedPredicate<T> = x => true): T 
       found = true
     }
   }
-  if (found && returnVal) {
+  if (found) {
     return returnVal
   } else {
     throw Error('sequence contains no elements')

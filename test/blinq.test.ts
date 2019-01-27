@@ -168,6 +168,7 @@ describe('blinq test', () => {
     expect(() => blinq([1, 2]).single()).toThrow()
     expect(() => blinq([1, 2]).single(x => x > 2)).toThrow()
     expect(blinq([1, 2]).single(x => x > 1)).toBe(2)
+    expect(blinq([false]).single()).toEqual(false)
   })
   it('singleOrDefault', () => {
     expect(blinq([1]).singleOrDefault()).toBe(1)
@@ -175,6 +176,7 @@ describe('blinq test', () => {
     expect(() => blinq([1, 2]).singleOrDefault()).toThrow()
     expect(blinq([1, 2]).singleOrDefault(x => x > 2)).toBeUndefined()
     expect(blinq([1, 2]).singleOrDefault(x => x > 1)).toBe(2)
+    expect(blinq([false]).single()).toEqual(false)
   })
   it('elementAt', () => {
     expect(blinq([1, 2, 3]).elementAt(1)).toBe(2)
@@ -188,21 +190,25 @@ describe('blinq test', () => {
     expect(range(0, 3).first()).toBe(0)
     expect(range(0, 3).first(x => x > 0)).toBe(1)
     expect(() => range(0, 3).first(x => x > 2)).toThrow()
+    expect(blinq([false]).first()).toEqual(false)
   })
   it('firstOrDefault', () => {
     expect(range(0, 3).firstOrDefault()).toBe(0)
     expect(range(0, 3).firstOrDefault(x => x > 0)).toBe(1)
     expect(range(0, 3).firstOrDefault(x => x > 2)).toBeUndefined()
+    expect(blinq([false]).firstOrDefault()).toEqual(false)
   })
   it('last', () => {
     expect(range(0, 3).last()).toBe(2)
     expect(range(0, 3).last(x => x < 2)).toBe(1)
     expect(() => range(0, 3).last(x => x > 2)).toThrow()
+    expect(() => blinq([false]).last()).not.toThrow()
   })
   it('lastOrDefault', () => {
     expect(range(0, 3).lastOrDefault()).toBe(2)
     expect(range(0, 3).lastOrDefault(x => x < 2)).toBe(1)
     expect(range(0, 3).lastOrDefault(x => x > 2)).toBeUndefined()
+    expect(() => blinq([false]).lastOrDefault()).not.toThrow()
   })
   it('forEach', () => {
     range(0, 3).forEach((x, i) => expect(x).toBe(i))

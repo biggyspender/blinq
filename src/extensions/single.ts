@@ -9,9 +9,11 @@ declare module '../Enumerable' {
   }
 }
 
+const dummy: any = {}
+
 function single<T>(this: Enumerable<T>, pred: IndexedPredicate<T> = x => true): T {
   let itemCount = 0
-  let foundItem
+  let foundItem = dummy
   let i = 0
   for (const item of this) {
     if (pred(item, i++)) {
@@ -23,10 +25,7 @@ function single<T>(this: Enumerable<T>, pred: IndexedPredicate<T> = x => true): 
     }
   }
   if (itemCount === 1) {
-    /* istanbul ignore next */
-    if (foundItem) {
-      return foundItem
-    }
+    return foundItem
   }
   throw Error('sequence contains no elements')
 }
