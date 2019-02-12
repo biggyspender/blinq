@@ -34,7 +34,7 @@ Now, just wrap your iterable with a call to `blinq(myIterable)`, and start trans
         console.log(v);
     }
     
-...or if you'd like an array of your results, you can materialize a loq query with the `.toArray()` method:
+...or if you'd like an array of your results, you can materialize a blinq query with the `.toArray()` method:
 
     const someNumbers = range(1, 4);
     const squaresBelowTen = someNumbers.select(n => n * n).where(n => n < 10);
