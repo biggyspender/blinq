@@ -13,7 +13,7 @@ Generated documentation can be found at [https://biggyspender.github.io/blinq/](
 
 ### How?
 
-Import blinq:
+Import blinq ES6 style:
 
     import {
       blinq,
@@ -24,6 +24,18 @@ Import blinq:
       repeatGenerate,
       repeat
     } from "blinq";
+
+or nodejs style:
+
+    const {
+      blinq,
+      range,
+      empty,
+      fromGenerator,
+      fromSingleValue,
+      repeatGenerate,
+      repeat
+    } = require("blinq")
 
 Now, just wrap your iterable with a call to `blinq(myIterable)`, and start transforming your data:
 
