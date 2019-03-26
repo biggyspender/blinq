@@ -13,7 +13,7 @@ Generated documentation can be found at [https://biggyspender.github.io/blinq/](
 
 ### How?
 
-Import blinq:
+Import blinq ES6 style:
 
     import {
       blinq,
@@ -25,6 +25,18 @@ Import blinq:
       repeat
     } from "blinq";
 
+or nodejs style:
+
+    const {
+      blinq,
+      range,
+      empty,
+      fromGenerator,
+      fromSingleValue,
+      repeatGenerate,
+      repeat
+    } = require("blinq")
+
 Now, just wrap your iterable with a call to `blinq(myIterable)`, and start transforming your data:
 
 
@@ -34,7 +46,7 @@ Now, just wrap your iterable with a call to `blinq(myIterable)`, and start trans
         console.log(v);
     }
     
-...or if you'd like an array of your results, you can materialize a loq query with the `.toArray()` method:
+...or if you'd like an array of your results, you can materialize a blinq query with the `.toArray()` method:
 
     const someNumbers = range(1, 4);
     const squaresBelowTen = someNumbers.select(n => n * n).where(n => n < 10);
