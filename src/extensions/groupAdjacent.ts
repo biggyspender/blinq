@@ -26,8 +26,9 @@ function groupAdjacent<TSource, TKey, TElement, TResult>(
   const source = this
   const eq = equalityComparer
     ? (a: TKey | undefined, b: TKey | undefined) =>
-        a != null && b != null && equalityComparer.equals(a, b)
-    : (a: TKey | undefined, b: TKey | undefined) => a != null && b != null && a === b
+        typeof a !== 'undefined' && typeof b !== 'undefined' && equalityComparer.equals(a, b)
+    : (a: TKey | undefined, b: TKey | undefined) =>
+        typeof a !== 'undefined' && typeof b !== 'undefined' && a === b
   // nasty coverage edge-case whereby transformation to ES5 destroys istanbul comment, so we need to put
   // it on wider scope. ugh.a
   return EnumerableGenerators.fromGenerator(

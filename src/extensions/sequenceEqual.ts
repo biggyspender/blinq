@@ -19,8 +19,9 @@ function sequenceEqual<T>(
 ): boolean {
   const eq = equalityComparer
     ? (a: T | undefined, b: T | undefined) =>
-        a != null && b != null && equalityComparer.equals(a, b)
-    : (a: T | undefined, b: T | undefined) => a != null && b != null && a === b
+        typeof a !== 'undefined' && typeof b !== 'undefined' && equalityComparer.equals(a, b)
+    : (a: T | undefined, b: T | undefined) =>
+        typeof a !== 'undefined' && typeof b !== 'undefined' && a === b
   const it1 = this[Symbol.iterator]()
   const it2 = seq[Symbol.iterator]()
   for (;;) {

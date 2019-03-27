@@ -55,7 +55,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
   }
   delete(key: TKey) {
     const bucket = getBucket(key, this.buckets, this.comparer)
-    if (bucket == null) {
+    if (bucket === null) {
       return false
     }
     const idx = blinq(bucket)
@@ -63,7 +63,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
       .where(({ k }) => this.comparer.equals(k, key))
       .select(({ i }) => i)
       .singleOrDefault()
-    if (idx == null) {
+    if (typeof idx === 'undefined') {
       return false
     }
     bucket.splice(idx, 1)
@@ -80,7 +80,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
   }
   has(key: TKey) {
     const bucket = getBucket(key, this.buckets, this.comparer)
-    if (bucket == null) {
+    if (bucket === null) {
       return false
     }
     return blinq(bucket).any(([k]) => this.comparer.equals(k, key))
@@ -99,7 +99,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
       return false
     }
     this.count++
-    bucket.push([key, value, insertIndex == null ? this.insertCount++ : insertIndex])
+    bucket.push([key, value, typeof insertIndex === 'undefined' ? this.insertCount++ : insertIndex])
     return true
   }
   get(key: TKey) {

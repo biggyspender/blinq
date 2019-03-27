@@ -23,10 +23,10 @@ export const hash = (value: any, visited?: Set<number>): number => {
       return 3630146161
     }
     const oid = getObjectId(value)
-    if (visitedSet.has(oid!)) {
+    if (visitedSet.has(oid)) {
       throw Error('circular')
     }
-    visitedSet.add(oid!)
+    visitedSet.add(oid)
     if (value[Symbol.iterator]) {
       return hashSequence(value, visitedSet, hash)
     }

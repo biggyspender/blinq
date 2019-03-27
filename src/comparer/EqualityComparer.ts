@@ -4,6 +4,4 @@ export interface EqualityComparer<T> {
 }
 /* istanbul ignore next */
 export const isEqualityComparer = <T>(obj: any): obj is EqualityComparer<T> =>
-  obj != null &&
-  typeof (obj as EqualityComparer<T>).equals === 'function' &&
-  typeof (obj as EqualityComparer<T>).getHashCode === 'function'
+  obj != null && typeof obj.equals === 'function' && typeof obj.getHashCode === 'function'
