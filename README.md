@@ -6,19 +6,7 @@ The following operations are available, and the user can optionally supply their
 
 
 
-| | | | | | | 
-| --- | --- | --- | --- | --- | --- |
-|aggregate       |all             |any         |append             |average             |concat            |
-|count           |defaultIfEmpty  |distinctBy  |distinct           |elementAt           |except            |
-|firstOrDefault  |first           |flatten     |forEach            |fullOuterGroupJoin  |fullOuterJoin     |
-|groupAdjacent   |groupBy         |groupJoin   |intersect          |isSubsetOf          |isSupersetOf      |
-|join            |lastOrDefault   |last        |leftOuterJoin      |maxBy               |max               |
-|minBy           |min             |orderBy     |orderByDescending  |thenBy              |thenByDescending  |
-|preprend        |reverse         |selectMany  |select             |sequenceEqual       |singleOrDefault   |
-|single          |skip            |skipWhile   |sum                |take                |takeWhile         |
-|toArray         |toLookup        |toMap       |union              |where               |zipAll            |
-|zip             |
-| | | | | | | 
+```aggregate, all, any, append, average, concat, count, defaultIfEmpty, distinctBy, distinct, elementAt, except, firstOrDefault, first, flatten, forEach, fullOuterGroupJoin, fullOuterJoin, groupAdjacent, groupBy, groupJoin, intersect, isSubsetOf, isSupersetOf, join, lastOrDefault, last, leftOuterJoin, maxBy, max, minBy, min, orderBy, orderByDescending, thenBy, thenByDescending, preprend, reverse, selectMany, select, sequenceEqual, singleOrDefault, single, skip, skipWhile, sum, take, takeWhile, toArray, toLookup, toMap, union, where, zipAll, zip```
 
 [![Build Status](https://travis-ci.org/biggyspender/blinq.svg?branch=master)](https://travis-ci.org/biggyspender/blinq)
 [![Coverage Status](https://coveralls.io/repos/github/biggyspender/blinq/badge.svg?branch=master)](https://coveralls.io/github/biggyspender/blinq?branch=master)
