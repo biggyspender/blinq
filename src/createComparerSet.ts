@@ -43,7 +43,7 @@ const toSet = <K>(map: Map<K, K>): Set<K> => {
     [Symbol.iterator]() {
       return set.keys()
     },
-    [Symbol.toStringTag]: 'goo'
+    [Symbol.toStringTag]: 'Set'
   }
   return set
 }

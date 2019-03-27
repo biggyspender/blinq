@@ -1,9 +1,8 @@
-import { blinq } from '../blinq'
+import { fromIterable as blinq } from '../EnumerableGenerators'
 import { EqualityComparer } from '../comparer/EqualityComparer'
 import { KeyValuePair } from './KeyValuePair'
 import { getBucket } from './getBucket'
 import { resize } from './resize'
-import { createHashTable } from './createHashTable'
 export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
   buckets: KeyValuePair<TKey, TValue>[][]
   count: number
@@ -11,12 +10,14 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
   comparer: EqualityComparer<TKey>
   insertCount: number
   initialCapacity: number
+  hashTableFactory: (cap: number, comparer: EqualityComparer<TKey>) => HashTable<TKey, TValue>
   constructor(
     buckets: KeyValuePair<TKey, TValue>[][],
     count: number,
     avgBucketFill: number,
     initialCapacity: number,
-    comparer: EqualityComparer<TKey>
+    comparer: EqualityComparer<TKey>,
+    hashTableFactory: (cap: number, comparer: EqualityComparer<TKey>) => HashTable<TKey, TValue>
   ) {
     this.buckets = buckets
     this.count = count
@@ -24,6 +25,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
     this.comparer = comparer
     this.insertCount = 0
     this.initialCapacity = initialCapacity
+    this.hashTableFactory = hashTableFactory
   }
   [Symbol.iterator]() {
     return this.entries()
@@ -46,7 +48,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
     return r[Symbol.iterator]()
   }
   clear() {
-    const buckets = createHashTable<TKey, TValue>(this.initialCapacity, this.comparer).buckets
+    const buckets = this.hashTableFactory(this.initialCapacity, this.comparer).buckets
     this.buckets = buckets
     this.count = 0
     this.insertCount = 0
@@ -89,7 +91,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
   add(key: TKey, value: TValue, insertIndex?: number) {
     const idealNumBuckets = (this.count / this.avgBucketFill) | 0
     if (idealNumBuckets >= this.buckets.length) {
-      this.buckets = resize(this.count * 2, this.buckets, this.comparer)
+      this.buckets = resize(this.count * 2, this.buckets, this.comparer, this.hashTableFactory)
     }
     const bucket = getBucket(key, this.buckets, this.comparer, true)!
     const keyExists = !bucket.every(([bkey]) => !this.comparer.equals(key, bkey))
@@ -109,7 +111,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
           .firstOrDefault()
       : undefined
   }
-  [Symbol.toStringTag]: 'foo'
+  [Symbol.toStringTag]: 'Map'
   /* istanbul ignore next */
   toString() {
     const counts = blinq(this.buckets).select(b => (b ? b.length : 0))

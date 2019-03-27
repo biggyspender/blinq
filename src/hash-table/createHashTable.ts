@@ -12,5 +12,12 @@ export const createHashTable = <TKey, TValue>(
   let buckets: KeyValuePair<TKey, TValue>[][] = initializeArrayForCapacity<
     KeyValuePair<TKey, TValue>[]
   >(idealNumBuckets)
-  return new HashTable<TKey, TValue>(buckets, count, avgBucketFill, capacity, comparer)
+  return new HashTable<TKey, TValue>(
+    buckets,
+    count,
+    avgBucketFill,
+    capacity,
+    comparer,
+    createHashTable
+  )
 }
