@@ -23,7 +23,7 @@ describe('hashtable', () => {
   })
   it('can be thrashed deep', () => {
     const ht = createComparerMap<{ a: { b: number } }, number>(0, deepEqualityComparer)
-    const numItems = 1000
+    const numItems = 100
     const s1 = process.hrtime()
     range(0, numItems).forEach(i => ht.set({ a: { b: i } }, i))
     const t1 = process.hrtime(s1)
@@ -36,7 +36,7 @@ describe('hashtable', () => {
   })
   it('can be thrashed', () => {
     const ht = createComparerMap<number, number>()
-    const numItems = 10000
+    const numItems = 1000
     const s1 = process.hrtime()
     range(0, numItems).forEach(i => ht.set(i, i))
     const t1 = process.hrtime(s1)
@@ -50,7 +50,7 @@ describe('hashtable', () => {
   it('can be thrashed', () => {
     const ht = createComparerMap<{}, number>()
 
-    const numItems = 10000
+    const numItems = 1000
     const keys = range(0, numItems)
       .select(x => ({}))
       .toArray()
@@ -92,7 +92,7 @@ describe('hashtable', () => {
     range(0, 10000).forEach(i => ht.set({ a: i, b: 'woo' }, `woo`))
     const t1 = process.hrtime(s1)
     const s2 = process.hrtime()
-    expect(range(0, 10000).all(i => ht.get({ a: i, b: 'goo' }) === `woo`)).toBeTruthy()
+    expect(range(0, 1000).all(i => ht.get({ a: i, b: 'goo' }) === `woo`)).toBeTruthy()
     const t2 = process.hrtime(s2)
     // console.info('Execution time (hr): %ds %dms', t1[0], t1[1] / 1000000);
     // console.info('Execution time (hr): %ds %dms', t2[0], t2[1] / 1000000);
@@ -103,39 +103,39 @@ describe('hashtable', () => {
       equals: (a, b) => a.a === b.a,
       getHashCode: x => hashNumber(x.a)
     })
-    expect(ht.has({ a: 10000, b: 'd' })).toBeFalsy()
+    expect(ht.has({ a: 1000, b: 'd' })).toBeFalsy()
 
-    range(0, 10000).forEach(i => ht.set({ a: i, b: 'woo' }, `woo`))
+    range(0, 1000).forEach(i => ht.set({ a: i, b: 'woo' }, `woo`))
     expect(ht.has({ a: 0, b: '' })).toBeTruthy()
     expect(ht.has({ a: 0, b: 'd' })).toBeTruthy()
-    expect(ht.has({ a: 10000, b: 'd' })).toBeFalsy()
-    expect(ht.has({ a: 9999, b: 'd' })).toBeTruthy()
+    expect(ht.has({ a: 1000, b: 'd' })).toBeFalsy()
+    expect(ht.has({ a: 999, b: 'd' })).toBeTruthy()
   })
   it('get', () => {
     const ht = createComparerMap<{ a: number; b: string }, string>(0, {
       equals: (a, b) => a.a === b.a,
       getHashCode: x => hashNumber(x.a)
     })
-    expect(ht.get({ a: 10000, b: 'd' })).toBeUndefined()
+    expect(ht.get({ a: 1000, b: 'd' })).toBeUndefined()
 
-    range(0, 10000).forEach(i => ht.set({ a: i, b: 'woo' }, `woo`))
+    range(0, 1000).forEach(i => ht.set({ a: i, b: 'woo' }, `woo`))
     expect(ht.get({ a: 0, b: '' })).toBeDefined()
     expect(ht.get({ a: 0, b: 'd' })).toBeDefined()
-    expect(ht.get({ a: 10000, b: 'd' })).toBeUndefined()
-    expect(ht.get({ a: 9999, b: 'd' })).toBeDefined()
+    expect(ht.get({ a: 1000, b: 'd' })).toBeUndefined()
+    expect(ht.get({ a: 999, b: 'd' })).toBeDefined()
   })
   it('entries', () => {
     const ht = createComparerMap<number, number>(0, {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     expect(
       blinq(ht.entries())
         .orderBy(([k, v]) => k)
         .toArray()
     ).toEqual(
-      range(0, 10000)
+      range(0, 1000)
         .select(i => [i, i])
         .toArray()
     )
@@ -145,7 +145,7 @@ describe('hashtable', () => {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     const a: [number, number, Map<number, number>, any][] = []
     const thisObj = {}
     ht.forEach(function(this: any, v, k, m) {
@@ -157,7 +157,7 @@ describe('hashtable', () => {
       blinq(a)
         .select(([k]) => k)
         .orderBy(k => k)
-        .sequenceEqual(range(0, 10000))
+        .sequenceEqual(range(0, 1000))
     ).toBeTruthy()
   })
   it('unbound forEach', () => {
@@ -165,7 +165,7 @@ describe('hashtable', () => {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     const a: [number, number, Map<number, number>][] = []
     ht.forEach(function(this: any, v, k, m) {
       a.push([v, k, m])
@@ -176,7 +176,7 @@ describe('hashtable', () => {
       blinq(a)
         .select(([k]) => k)
         .orderBy(k => k)
-        .sequenceEqual(range(0, 10000))
+        .sequenceEqual(range(0, 1000))
     ).toBeTruthy()
   })
   it('keys', () => {
@@ -184,13 +184,13 @@ describe('hashtable', () => {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     expect(
       blinq(ht.keys())
         .orderBy(k => k)
         .toArray()
     ).toEqual(
-      range(0, 10000)
+      range(0, 1000)
         .select(i => i)
         .toArray()
     )
@@ -201,12 +201,12 @@ describe('hashtable', () => {
       getHashCode: hashNumber
     })
     expect(ht.delete(1)).toBeFalsy()
-    range(0, 10000).forEach(i => ht.set(i, i))
-    expect(ht.size).toBe(10000)
+    range(0, 1000).forEach(i => ht.set(i, i))
+    expect(ht.size).toBe(1000)
     expect(ht.delete(1)).toBeTruthy()
-    expect(ht.size).toBe(9999)
+    expect(ht.size).toBe(999)
     expect(ht.delete(1)).toBeFalsy()
-    expect(ht.size).toBe(9999)
+    expect(ht.size).toBe(999)
   })
   it('clear', () => {
     const ht = createComparerMap<number, number>(0, {
@@ -214,9 +214,9 @@ describe('hashtable', () => {
       getHashCode: hashNumber
     })
 
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     expect(ht.has(1)).toBeTruthy()
-    expect(ht.size).toBe(10000)
+    expect(ht.size).toBe(1000)
     ht.clear()
     expect(ht.has(1)).toBeFalsy()
     expect(ht.size).toBe(0)
@@ -226,13 +226,13 @@ describe('hashtable', () => {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     expect(
       blinq(ht.values())
         .orderBy(v => v)
         .toArray()
     ).toEqual(
-      range(0, 10000)
+      range(0, 1000)
         .select(i => i)
         .toArray()
     )
@@ -242,7 +242,7 @@ describe('hashtable', () => {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    range(0, 10000).forEach(i => ht.set(i, i))
+    range(0, 1000).forEach(i => ht.set(i, i))
     expect([...ht[Symbol.iterator]()]).toEqual([...ht.entries()])
   })
   it('size', () => {
@@ -260,7 +260,7 @@ describe('hashtable', () => {
       equals: (a, b) => a === b,
       getHashCode: hashNumber
     })
-    const numItems = 10000
+    const numItems = 1000
     range(0, numItems).forEach(i => ht.set(i, i))
     expect(blinq(ht.values()).sequenceEqual(range(0, numItems))).toBeTruthy()
     expect(blinq(ht.keys()).sequenceEqual(range(0, numItems))).toBeTruthy()

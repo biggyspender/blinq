@@ -318,6 +318,24 @@ describe('blinq test', () => {
     })
     expect(map.get(10)).toBeUndefined()
     expect(() => blinq([0, 0]).toMap(x => x, x => x)).toThrow()
+    expect(() => range(0, 10).toMap(x => (x / 2) | 0, deepEqualityComparer)).toThrow()
+  })
+  it('toSet', () => {
+    const set = range(0, 10).toSet(x => x)
+    expect(set.count()).toBe(10)
+
+    expect(set.has(10)).toBeFalsy()
+    expect(() => blinq([1, 1]).toSet(x => x)).toThrow()
+
+    const set2 = range(0, 10).toSet()
+    expect(set2.count()).toBe(10)
+
+    expect(set2.has(10)).toBeFalsy()
+    const set3 = range(0, 10).toSet(deepEqualityComparer)
+    expect(set3.count()).toBe(10)
+
+    expect(set3.has(10)).toBeFalsy()
+    expect(() => range(0, 10).toSet(x => (x / 2) | 0, deepEqualityComparer)).toThrow()
   })
   it('groupBy', () => {
     const output = range(0, 2)

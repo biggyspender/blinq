@@ -6,7 +6,7 @@ The following operations are available, and the user can optionally supply their
 
 
 
-```aggregate, all, any, append, average, concat, count, defaultIfEmpty, distinctBy, distinct, elementAt, except, firstOrDefault, first, flatten, forEach, fullOuterGroupJoin, fullOuterJoin, groupAdjacent, groupBy, groupJoin, intersect, isSubsetOf, isSupersetOf, join, lastOrDefault, last, leftOuterJoin, maxBy, max, minBy, min, orderBy, orderByDescending, thenBy, thenByDescending, preprend, reverse, selectMany, select, sequenceEqual, singleOrDefault, single, skip, skipWhile, sum, take, takeWhile, toArray, toLookup, toMap, union, where, zipAll, zip```
+```aggregate, all, any, append, average, concat, count, defaultIfEmpty, distinctBy, distinct, elementAt, except, firstOrDefault, first, flatten, forEach, fullOuterGroupJoin, fullOuterJoin, groupAdjacent, groupBy, groupJoin, intersect, isSubsetOf, isSupersetOf, join, lastOrDefault, last, leftOuterJoin, maxBy, max, minBy, min, orderBy / orderByDescending / thenBy / thenByDescending, preprend, reverse, selectMany, select, sequenceEqual, singleOrDefault, single, skip, skipWhile, sum, take, takeWhile, toArray, toLookup, toMap, toSet, union, where, zipAll, zip```
 
 [![Build Status](https://travis-ci.org/biggyspender/blinq.svg?branch=master)](https://travis-ci.org/biggyspender/blinq)
 [![Coverage Status](https://coveralls.io/repos/github/biggyspender/blinq/badge.svg?branch=master)](https://coveralls.io/github/biggyspender/blinq?branch=master)
@@ -28,7 +28,9 @@ Import blinq ES6 style:
       fromGenerator,
       fromSingleValue,
       repeatGenerate,
-      repeat
+      repeat,
+      EqualityComparer,
+      hashString
     } from "blinq";
 
 or nodejs style:
@@ -40,7 +42,9 @@ or nodejs style:
       fromGenerator,
       fromSingleValue,
       repeatGenerate,
-      repeat
+      repeat,
+      EqualityComparer,
+      hashString
     } = require("blinq")
 
 Now, just wrap your iterable with a call to `blinq(myIterable)`, and start transforming your data:
@@ -62,6 +66,16 @@ Now, just wrap your iterable with a call to `blinq(myIterable)`, and start trans
 or even spread your results into an array:
 
     const arr2 = [...squaresBelowTen]
+
+### A case-insensitve set, using EqualityComparer<T>
+
+    const names = ["zebra", "antelope", "ardvaark", "tortoise", "turtle", "dog", "frog"]
+    const comparer: EqualityComparer<string> = {
+        equals: (a, b) => a.toLowerCase() === b.toLowerCase(),
+        getHashCode: (x) => hashString(x.toLowerCase())
+    }
+    const set = blinq(names).toSet(comparer)
+    expect(set.has("DOg")).toBeTruthy()
 
 #### More examples:
 
