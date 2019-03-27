@@ -1,4 +1,3 @@
-import { blinq } from '../blinq'
 import { entries } from '../util/entries'
 export const deepEqual = (obj1: any, obj2: any): boolean => {
   const tObj1 = typeof obj1
@@ -13,9 +12,19 @@ export const deepEqual = (obj1: any, obj2: any): boolean => {
     return obj1 === obj2
   }
   if (obj1[Symbol.iterator] && obj2[Symbol.iterator]) {
-    return blinq(obj1 as Iterable<any>)
-      .zip(obj2 as Iterable<any>, (o1, o2) => [o1, o2])
-      .all(([o1, o2]) => deepEqual(o1, o2))
+    const a1 = [...obj1]
+    const a2 = [...obj2]
+    if (a1.length !== a2.length) {
+      return false
+    }
+    for (let i = 0; i < a1.length; ++i) {
+      const o1 = a1[i]
+      const o2 = a2[i]
+      if (!deepEqual(o1, o2)) {
+        return false
+      }
+    }
+    return true
   }
   if (obj1[Symbol.iterator] ? !obj2[Symbol.iterator] : !!obj2[Symbol.iterator]) {
     return false
@@ -29,10 +38,16 @@ export const deepEqual = (obj1: any, obj2: any): boolean => {
   entries1.sort(sortFunc)
   entries2.sort(sortFunc)
 
-  return (
-    entries1.length === entries2.length &&
-    blinq(entries1)
-      .zip(entries2, (e1, e2) => [e1, e2])
-      .all(([[k1, v1], [k2, v2]]) => k1 === k2 && deepEqual(v1, v2))
-  )
+  if (entries1.length !== entries2.length) {
+    return false
+  }
+  for (let i = 0; i < entries1.length; ++i) {
+    const [k1, v1] = entries1[i]
+    const [k2, v2] = entries2[i]
+    if (k1 !== k2 || !deepEqual(v1, v2)) {
+      return false
+    }
+  }
+
+  return true
 }
