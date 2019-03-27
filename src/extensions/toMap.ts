@@ -39,9 +39,9 @@ function toMap<T, TKey, TValue = T>(
   valueSelectorOrEqualityComparer?: IndexedSelector<T, TValue> | EqualityComparer<TKey>,
   equalityComparer?: EqualityComparer<TKey>
 ): MapIterable<TKey, TValue> {
-  const vs: any = isIndexedSelector(valueSelectorOrEqualityComparer)
+  const vs: IndexedSelector<T, TValue> = (isIndexedSelector(valueSelectorOrEqualityComparer)
     ? valueSelectorOrEqualityComparer
-    : getIdentity()
+    : getIdentity()) as IndexedSelector<T, TValue>
   const eqCom = isEqualityComparer(valueSelectorOrEqualityComparer)
     ? valueSelectorOrEqualityComparer
     : equalityComparer
@@ -53,7 +53,7 @@ function toMap<T, TKey, TValue = T>(
     if (map.has(key)) {
       throw Error('duplicate key')
     }
-    map.set(key, vs(x, i) as any)
+    map.set(key, vs(x, i))
   }
   return new MapIterable(map)
 }

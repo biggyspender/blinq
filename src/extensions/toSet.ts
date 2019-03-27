@@ -27,9 +27,9 @@ function toSet<T, TKey = T>(
   keySelectorOrEqualityComparer?: IndexedSelector<T, TKey> | EqualityComparer<TKey>,
   equalityComparer?: EqualityComparer<TKey>
 ): SetIterable<TKey> {
-  const ks: any = isIndexedSelector(keySelectorOrEqualityComparer)
+  const ks: IndexedSelector<T, TKey> = (isIndexedSelector(keySelectorOrEqualityComparer)
     ? keySelectorOrEqualityComparer
-    : getIdentity()
+    : getIdentity()) as IndexedSelector<T, TKey>
   const eqCom = isEqualityComparer(keySelectorOrEqualityComparer)
     ? keySelectorOrEqualityComparer
     : equalityComparer
@@ -37,10 +37,10 @@ function toSet<T, TKey = T>(
   let i = 0
   for (const x of this) {
     const key = ks(x, i++)
-    if (set.has(key as any)) {
+    if (set.has(key)) {
       throw Error('duplicate key')
     }
-    set.add(key as any)
+    set.add(key)
   }
   return new SetIterable(set)
 }

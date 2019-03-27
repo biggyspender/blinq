@@ -38,7 +38,7 @@ function toLookup<T, TKey, TValue>(
   valueSelector: IndexedSelector<T, TValue>,
   equalityComparer?: EqualityComparer<TKey>
 ): MapIterable<TKey, Enumerable<TValue>>
-function toLookup<T, TKey, TValue>(
+function toLookup<T, TKey, TValue = TKey>(
   this: Enumerable<T>,
   keySelector: IndexedSelector<T, TKey>,
   valueSelectorOrEqualityComparer?: IndexedSelector<T, TValue> | EqualityComparer<TKey>,
