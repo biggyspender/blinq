@@ -1,5 +1,5 @@
 import { createComparerMap } from '../src/createComparerMap'
-import { deepComparer } from '../src/comparer/deepComparer'
+import { deepEqualityComparer } from '../src/comparer/deepEqualityComparer'
 import { range, blinq } from '../src/blinq'
 import { hashNumber } from '../src/hashing/hashNumber'
 import { defaultSortMethod } from '../src/util/defaultSortMethod'
@@ -8,7 +8,7 @@ const lipsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque consequat vitae felis at venenatis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a scelerisque quam. Nunc consequat felis libero. Fusce feugiat neque lacus. Nullam nec ex ipsum. Fusce maximus justo metus, eu elementum nisl scelerisque quis. Quisque sit amet tincidunt dui, vitae porta orci. Cras pharetra volutpat odio facilisis pulvinar. Vivamus id mi efficitur, accumsan lacus eu, egestas diam. Curabitur mi est, eleifend ac risus a, feugiat efficitur leo.'
 describe('hashtable', () => {
   it('works deep', () => {
-    const ht = createComparerMap<string, number>(0, deepComparer)
+    const ht = createComparerMap<string, number>(0, deepEqualityComparer)
     ht.set('foo', 1)
     ht.set('foo', 1)
     expect(ht.get('foo')).toBe(1)
@@ -22,7 +22,7 @@ describe('hashtable', () => {
     expect(ht.get('woo')).toBe(undefined)
   })
   it('can be thrashed deep', () => {
-    const ht = createComparerMap<{ a: { b: number } }, number>(0, deepComparer)
+    const ht = createComparerMap<{ a: { b: number } }, number>(0, deepEqualityComparer)
     const numItems = 1000
     const s1 = process.hrtime()
     range(0, numItems).forEach(i => ht.set({ a: { b: i } }, i))
@@ -65,7 +65,10 @@ describe('hashtable', () => {
     // console.log(ht.toString!());
   })
   it('distributes nicely', () => {
-    const ht = createComparerMap<string, string>(0, deepComparer) as HashTable<string, string>
+    const ht = createComparerMap<string, string>(0, deepEqualityComparer) as HashTable<
+      string,
+      string
+    >
     for (const v of range(0, lipsum.length).select(r => rotateStringLeft(lipsum, r))) {
       ht.set(v, v)
     }

@@ -1,5 +1,5 @@
 import { createComparerSet } from '../src/createComparerSet'
-import { deepComparer } from '../src/comparer/deepComparer'
+import { deepEqualityComparer } from '../src/comparer/deepEqualityComparer'
 import { range } from '../src/EnumerableGenerators'
 import { blinq } from '../src/blinq'
 
@@ -40,7 +40,7 @@ describe('createComparerSet', () => {
       set.clear()
       expect(set.size).toBe(0)
     }
-    testSet(createComparerSet<number>(0, deepComparer))
+    testSet(createComparerSet<number>(0, deepEqualityComparer))
     testSet(createComparerSet<number>())
   })
 })

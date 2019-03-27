@@ -1,13 +1,26 @@
 import { Enumerable } from '../Enumerable'
+import { EqualityComparer } from '../blinq'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
-    sequenceEqual<T>(this: Enumerable<T>, seq: Iterable<T>): boolean
+    sequenceEqual<T>(
+      this: Enumerable<T>,
+      seq: Iterable<T>,
+      equalityComparer?: EqualityComparer<T>
+    ): boolean
   }
 }
 
 //
-function sequenceEqual<T>(this: Enumerable<T>, seq: Iterable<T>): boolean {
+function sequenceEqual<T>(
+  this: Enumerable<T>,
+  seq: Iterable<T>,
+  equalityComparer?: EqualityComparer<T>
+): boolean {
+  const eq = equalityComparer
+    ? (a: T | undefined, b: T | undefined) =>
+        a != null && b != null && equalityComparer.equals(a, b)
+    : (a: T | undefined, b: T | undefined) => a != null && b != null && a === b
   const it1 = this[Symbol.iterator]()
   const it2 = seq[Symbol.iterator]()
   for (;;) {
@@ -19,7 +32,7 @@ function sequenceEqual<T>(this: Enumerable<T>, seq: Iterable<T>): boolean {
     if (it1Result.done || it2Result.done) {
       return false
     }
-    if (it1Result.value !== it2Result.value) {
+    if (!eq(it1Result.value, it2Result.value)) {
       return false
     }
   }

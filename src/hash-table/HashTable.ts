@@ -31,7 +31,7 @@ export class HashTable<TKey, TValue> implements Map<TKey, TValue> {
   entries(): IterableIterator<[TKey, TValue]> {
     const r = [
       ...blinq(this.buckets)
-        .selectMany(x => x)
+        .selectMany(x => x || [])
         .orderBy(([, , i]) => i)
         .select<KeyValuePair<TKey, TValue>, [TKey, TValue]>(([k, v]) => [k, v])
     ]

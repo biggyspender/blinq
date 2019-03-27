@@ -1,6 +1,7 @@
 import { Enumerable } from '../Enumerable'
 import * as EnumerableGenerators from '../EnumerableGenerators'
 import { IndexedSelector } from '../IndexedSelector'
+import { EqualityComparer } from '../blinq'
 declare module '../Enumerable' {
   interface Enumerable<T> {
     groupJoin<T, TInner, TKey, TOut>(
@@ -8,7 +9,8 @@ declare module '../Enumerable' {
       innerSeq: Iterable<TInner>,
       outerKeySelector: IndexedSelector<T, TKey>,
       innerKeySelector: IndexedSelector<TInner, TKey>,
-      selector: (o: T, v: Enumerable<TInner>) => TOut
+      selector: (o: T, v: Enumerable<TInner>) => TOut,
+      equalityComparer?: EqualityComparer<TKey>
     ): Enumerable<TOut>
   }
 }
@@ -18,10 +20,11 @@ function groupJoin<T, TInner, TKey, TOut>(
   innerSeq: Iterable<TInner>,
   outerKeySelector: IndexedSelector<T, TKey>,
   innerKeySelector: IndexedSelector<TInner, TKey>,
-  selector: (o: T, v: Enumerable<TInner>) => TOut
+  selector: (o: T, v: Enumerable<TInner>) => TOut,
+  equalityComparer?: EqualityComparer<TKey>
 ): Enumerable<TOut> {
   const innerSeqIt = EnumerableGenerators.fromIterable(innerSeq)
-  const lookup = innerSeqIt.toLookup(innerKeySelector)
+  const lookup = innerSeqIt.toLookup(innerKeySelector, equalityComparer)
   const outerSeq = this
 
   return EnumerableGenerators.fromGenerator(function*() {

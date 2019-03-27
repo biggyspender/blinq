@@ -10,6 +10,7 @@ import {
 } from '../src/blinq'
 import { Enumerable } from '../src/Enumerable'
 import { Date } from './Date'
+import { deepEqualityComparer } from '../src/comparer/deepEqualityComparer'
 
 describe('blinq test', () => {
   it('RangeIterable generates range', () => {
@@ -48,6 +49,14 @@ describe('blinq test', () => {
         .distinctBy(d => d.year)
         .count()
     ).toBe(2)
+  })
+  it('distinctBy with comparer', () => {
+    const nums = range(0, 1000).select(x => (x / 5) | 0)
+    expect(
+      blinq(nums)
+        .distinctBy(d => d, deepEqualityComparer)
+        .count()
+    ).toBe(200)
   })
   it('orderBy', () => {
     const dates: Date[] = [
@@ -216,6 +225,9 @@ describe('blinq test', () => {
   it('intersect', () => {
     expect([...range(0, 5).intersect(range(3, 10))]).toEqual([3, 4])
   })
+  it('intersect with comparer', () => {
+    expect([...range(0, 5).intersect(range(3, 10), deepEqualityComparer)]).toEqual([3, 4])
+  })
 
   it('isSubsetOf', () => {
     expect(range(0, 2).isSubsetOf([0, 1, 2, 3])).toEqual(true)
@@ -273,6 +285,12 @@ describe('blinq test', () => {
     expect(range(0, 3).sequenceEqual([0, 1])).toBeFalsy()
     expect(range(0, 2).sequenceEqual([0, 1, 2])).toBeFalsy()
   })
+  it('sequenceEqual with comparer', () => {
+    expect(range(0, 3).sequenceEqual([0, 1, 2], deepEqualityComparer)).toBeTruthy()
+    expect(range(0, 3).sequenceEqual([0, 1, 4], deepEqualityComparer)).toBeFalsy()
+    expect(range(0, 3).sequenceEqual([0, 1], deepEqualityComparer)).toBeFalsy()
+    expect(range(0, 2).sequenceEqual([0, 1, 2], deepEqualityComparer)).toBeFalsy()
+  })
   it('toArray', () => {
     expect(range(0, 2).toArray()).toEqual([0, 1])
   })
@@ -281,6 +299,16 @@ describe('blinq test', () => {
     expect(lookup.count()).toBe(2)
     expect([...lookup.get(0)]).toEqual([0, 2, 4, 6, 8])
     expect([...lookup.get(1)]).toEqual([1, 3, 5, 7, 9])
+  })
+  it('toLookup with comparer', () => {
+    const lookup = range(0, 10).toLookup(x => x % 2, deepEqualityComparer)
+    expect(lookup.count()).toBe(2)
+    expect([...lookup.get(0)]).toEqual([0, 2, 4, 6, 8])
+    expect([...lookup.get(1)]).toEqual([1, 3, 5, 7, 9])
+    const lookup2 = range(0, 10).toLookup(x => x % 2, x => x * 2, deepEqualityComparer)
+    expect(lookup2.count()).toBe(2)
+    expect([...lookup2.get(0)]).toEqual([0, 4, 8, 12, 16])
+    expect([...lookup2.get(1)]).toEqual([2, 6, 10, 14, 18])
   })
   it('toMap', () => {
     const map = range(0, 10).toMap(x => x, x => x / 2)
@@ -302,6 +330,15 @@ describe('blinq test', () => {
     const seq1 = range(0, 5)
     const seq2 = range(3, 5).selectMany(x => repeat(x, 2))
     const joined = seq1.groupJoin(seq2, x => x, x => x, (k, v) => ({ k, v }))
+    expect([...joined.select(x => x.k)]).toEqual([0, 1, 2, 3, 4])
+    expect([...joined.select(x => x.k)]).toEqual([0, 1, 2, 3, 4])
+    expect([...joined.select(x => [...x.v])]).toEqual([[], [], [], [3, 3], [4, 4]])
+    expect([...joined.select(x => [...x.v])]).toEqual([[], [], [], [3, 3], [4, 4]])
+  })
+  it('groupJoin with comparer', () => {
+    const seq1 = range(0, 5)
+    const seq2 = range(3, 5).selectMany(x => repeat(x, 2))
+    const joined = seq1.groupJoin(seq2, x => x, x => x, (k, v) => ({ k, v }), deepEqualityComparer)
     expect([...joined.select(x => x.k)]).toEqual([0, 1, 2, 3, 4])
     expect([...joined.select(x => x.k)]).toEqual([0, 1, 2, 3, 4])
     expect([...joined.select(x => [...x.v])]).toEqual([[], [], [], [3, 3], [4, 4]])
@@ -440,6 +477,55 @@ describe('blinq test', () => {
       'not relevant no match'
     ])
   })
+  it('leftOuterJoin with comparer', () => {
+    let outerSeq: Array<{ id: number; value: string }> = [
+      {
+        id: 1,
+        value: 'chris'
+      },
+      {
+        id: 2,
+        value: 'andrew'
+      },
+      {
+        id: 4,
+        value: 'not relevant'
+      }
+    ]
+    let innerSeq: Array<{ id: number; value: string }> = [
+      {
+        id: 1,
+        value: 'sperry'
+      },
+      {
+        id: 1,
+        value: 'pike'
+      },
+      {
+        id: 2,
+        value: 'johnson'
+      },
+      {
+        id: 3,
+        value: 'not relevant'
+      }
+    ]
+
+    let items = blinq(outerSeq).leftOuterJoin(
+      innerSeq,
+      outerItem => outerItem.id,
+      innerItem => innerItem.id,
+      (outerItem, innerItem) => outerItem.value + ' ' + (innerItem ? innerItem.value : 'no match'),
+      deepEqualityComparer
+    )
+
+    expect([...items]).toEqual([
+      'chris sperry',
+      'chris pike',
+      'andrew johnson',
+      'not relevant no match'
+    ])
+  })
 
   it('skip', () => {
     expect([...blinq([1, 2, 3]).skip(1)]).toEqual([2, 3])
@@ -558,6 +644,13 @@ describe('blinq test', () => {
     expect(
       blinq([1, 1, 2, 2, 2, 3, 3, 3, 3, 2, 2])
         .groupAdjacent(x => x, x => x, (key, items) => items.toArray())
+        .toArray()
+    ).toEqual([[1, 1], [2, 2, 2], [3, 3, 3, 3], [2, 2]])
+  })
+  it('groupAdjacent with comparer', () => {
+    expect(
+      blinq([1, 1, 2, 2, 2, 3, 3, 3, 3, 2, 2])
+        .groupAdjacent(x => x, x => x, (key, items) => items.toArray(), deepEqualityComparer)
         .toArray()
     ).toEqual([[1, 1], [2, 2, 2], [3, 3, 3, 3], [2, 2]])
   })

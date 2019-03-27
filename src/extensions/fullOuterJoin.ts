@@ -4,6 +4,7 @@ import { IndexedSelector } from '../IndexedSelector'
 import getIdentity from '../getIdentity'
 import './fullOuterGroupJoin'
 import './defaultIfEmpty'
+import { EqualityComparer } from '../blinq'
 
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -12,7 +13,8 @@ declare module '../Enumerable' {
       rightSeq: Iterable<TRight>,
       leftKeySelector: IndexedSelector<T, TKey>,
       rightKeySelector: IndexedSelector<TRight, TKey>,
-      selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
+      selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut,
+      equalityComparer?: EqualityComparer<TKey>
     ): Enumerable<TOut>
   }
 }
@@ -24,10 +26,16 @@ function fullOuterJoin<T, TRight, TKey, TOut>(
   rightSeq: Iterable<TRight>,
   leftKeySelector: IndexedSelector<T, TKey>,
   rightKeySelector: IndexedSelector<TRight, TKey>,
-  selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut
+  selector: (o: T | undefined, v: TRight | undefined, k: TKey) => TOut,
+  equalityComparer?: EqualityComparer<TKey>
 ): Enumerable<TOut> {
-  return this.fullOuterGroupJoin(rightSeq, leftKeySelector, rightKeySelector, (lft, rgt, i) =>
-    lft.defaultIfEmpty().selectMany(l => rgt.defaultIfEmpty().select(r => selector(l, r, i)))
+  return this.fullOuterGroupJoin(
+    rightSeq,
+    leftKeySelector,
+    rightKeySelector,
+    (lft, rgt, i) =>
+      lft.defaultIfEmpty().selectMany(l => rgt.defaultIfEmpty().select(r => selector(l, r, i))),
+    equalityComparer
   ).selectMany(identity)
 }
 

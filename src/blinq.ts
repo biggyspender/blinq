@@ -68,3 +68,8 @@ export const repeatGenerate = EnumerableGenerators.repeatGenerate
 export const repeat = EnumerableGenerators.repeat
 export const defaultComparer = getDefaultComparer()
 export const identity = getIdentity()
+export { createComparerMap } from './createComparerMap'
+export { createComparerSet } from './createComparerSet'
+export { deepEqualityComparer as deepComparer } from './comparer/deepEqualityComparer'
+export { EqualityComparer } from './comparer/EqualityComparer'
+export { hash } from './hashing/hash'
