@@ -15,6 +15,7 @@ describe('deepEqual', () => {
   })
   it('compares sequences', () => {
     expect(deepEqual([1, 2], [1, 2])).toBeTruthy()
+    expect(deepEqual([1], [1, 2])).toBeFalsy()
     expect(deepEqual([], [])).toBeTruthy()
     expect(deepEqual([1, 2], [1, 3])).toBeFalsy()
   })
@@ -26,6 +27,7 @@ describe('deepEqual', () => {
     expect(deepEqual({ a: 1 }, { a: 1 })).toBeTruthy()
     expect(deepEqual({ a: 1 }, { a: 2 })).toBeFalsy()
     expect(deepEqual({ b: 1 }, { a: 1 })).toBeFalsy()
+    expect(deepEqual({ b: 1, c: 2 }, { a: 1 })).toBeFalsy()
   })
   it('works recursively', () => {
     expect(deepEqual({ a: { b: 1 } }, { a: { b: 1 } })).toBeTruthy()

@@ -5,5 +5,6 @@ export const initializeArrayForCapacity = <T>(capacity: number) => {
       return new Array<T>(p)
     }
   }
+  /* istanbul ignore next */
   throw Error('too large')
 }
