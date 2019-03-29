@@ -67,7 +67,7 @@ or even spread your results into an array:
 
     const arr2 = [...squaresBelowTen]
 
-### A case-insensitve set, using EqualityComparer<T>
+### A case-insensitive set, using EqualityComparer<T>
 
     const names = ["zebra", "antelope", "ardvaark", "tortoise", "turtle", "dog", "frog"]
     const comparer: EqualityComparer<string> = {
