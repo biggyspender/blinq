@@ -1,4 +1,4 @@
-## A strongly typed TypeScript implementation of Microsoft dotnet's LINQ to Objects using ES6 iterables.
+## A strongly-typed TypeScript implementation of Microsoft dotnet's LINQ to Objects using ES6 iterables.
 
 With the advent of javascript iterators and generators, its possible to pipe sequences through a bunch of transformations without materializing collections (arrays) for the intermediate steps. This library attempts to recreate the dotnet linq-to-objects api to provide a number of standard operations on iterable sequences.
 
