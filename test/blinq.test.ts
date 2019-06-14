@@ -548,6 +548,9 @@ describe('blinq test', () => {
   it('skip', () => {
     expect([...blinq([1, 2, 3]).skip(1)]).toEqual([2, 3])
   })
+  it('skipWhile', () => {
+    expect([...blinq([1, 2, 3, 4, 1, 5]).skipWhile(x => x < 3)]).toEqual([3, 4, 1, 5])
+  })
   it('take', () => {
     expect([...blinq([1, 2, 3]).take(2)]).toEqual([1, 2])
   })

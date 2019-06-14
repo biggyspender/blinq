@@ -12,11 +12,15 @@ function skipWhile<T>(this: Enumerable<T>, pred: IndexedPredicate<T>): Enumerabl
   const src = this
   return EnumerableGenerators.fromGenerator(function*() {
     let i = 0
+    let skip = true
     for (const item of src) {
-      const result = pred(item, i++)
-      if (result) {
-        continue
+      if (skip) {
+        const result = pred(item, i++)
+        if (result) {
+          continue
+        }
       }
+      skip = false
       yield item
     }
   })
