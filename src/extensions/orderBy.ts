@@ -1,5 +1,5 @@
 import { Enumerable } from '../Enumerable'
-import OrderedIterable from '../OrderedIterable'
+import OrderedIterable, { OrderedItem } from '../OrderedIterable'
 import { ComparerBuilder } from '../ComparerBuilder'
 declare module '../Enumerable' {
   interface Enumerable<T> {
@@ -8,7 +8,11 @@ declare module '../Enumerable' {
 }
 
 function orderBy<T, TCmp>(this: Enumerable<T>, selector: (x: T) => TCmp): OrderedIterable<T> {
-  const builder = ComparerBuilder.create<T>().sortKey(selector)
-  return new OrderedIterable<T>(this, builder)
+  const wrapped: Enumerable<OrderedItem<T>> = this.select(item => ({
+    item,
+    orders: [selector(item)]
+  }))
+  const builder = ComparerBuilder.create<OrderedItem<T>>().sortKey(x => x.orders[0])
+  return new OrderedIterable<T>(wrapped, builder)
 }
 Enumerable.prototype.orderBy = orderBy
