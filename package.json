@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "",
   "keywords": [],
+  "sideEffects": false,
   "main": "dist/blinq.umd.js",
   "module": "dist/blinq.es5.js",
   "typings": "dist/types/src/blinq.d.ts",
@@ -31,7 +32,7 @@
     "commit": "npx git-cz",
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once --pro"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -107,7 +108,7 @@
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.17.0",
-    "semantic-release": "^15.13.3",
+    "semantic-release": "^17.0.4",
     "travis-deploy-once": "^5.0.11",
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
